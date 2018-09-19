@@ -1,0 +1,24 @@
+package com.example.s3k_user1.appzonas;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+/**
+ * Fragmento para la pestaña "TARJETAS" de la sección "Mi Cuenta"
+ */
+public class FragmentoTarjetas extends Fragment {
+
+    public FragmentoTarjetas() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_maps, container, false);
+    }
+
+
+}
