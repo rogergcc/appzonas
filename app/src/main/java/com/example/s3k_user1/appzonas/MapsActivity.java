@@ -300,7 +300,7 @@ public class MapsActivity extends AppCompatActivity implements
                 //Log.e("Volley", error.toString());
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                     //Toast.makeText(getBaseContext(), "Tiempo de Respuesta, Vuelga Generar", Toast.LENGTH_LONG).show();
-                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelga a Generar", Toast.LENGTH_LONG).show();
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -422,7 +422,7 @@ public class MapsActivity extends AppCompatActivity implements
             public void onErrorResponse(VolleyError error) {
                 //Log.e("Volley", error.toString());
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                    Toast.makeText(getBaseContext(), "Tiempo de Respuesta, Vuelga Generar", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -528,7 +528,7 @@ public class MapsActivity extends AppCompatActivity implements
         getSupportActionBar().setLogo(R.drawable.logo);
 
         getSupportActionBar().setDisplayUseLogoEnabled(true);
-
+        getSupportActionBar().setTitle("");
         LocalBroadcastManager.getInstance(this).registerReceiver(mHandler, new IntentFilter("com.example.s3k_user1.appzonas_FCM"));
         setContentView(R.layout.activity_maps);
 
@@ -655,7 +655,7 @@ public class MapsActivity extends AppCompatActivity implements
         Toast.makeText(this, "Connection suspended", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
+      @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
         if (connectionResult.hasResolution()) {
             try {
