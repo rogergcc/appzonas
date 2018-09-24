@@ -2,7 +2,6 @@ package com.example.s3k_user1.appzonas;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,27 +10,20 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Looper;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,15 +37,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -62,17 +51,15 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -225,6 +212,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                         String userObtenerID = "-";
                         String codigoZonaTrabajo = "0";
+                        mMap.clear();
                         for (int i = 0; i < zonasList.size(); i++) {
                             final double lat = Double.parseDouble(zonasList.get(i).getLatitud());
                             final double lon = Double.parseDouble(zonasList.get(i).getLongitud());
@@ -274,21 +262,24 @@ public class MapsActivity extends AppCompatActivity implements
                             estas = " sin Zona de Trabajo asignado";
                         else
                             estas = habilitarAcceso ? " Acceso Habilitado y Zona: "+codigoZonaTrabajo : "Se encuentra fuera de una Zona de Trabajo asignado";
-                        if (habilitarAcceso){
-                            habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"1");
-                            obtenerTokenDelUsuario(codigoUsuario);
-
-                            DynamicToast.makeSuccess(getBaseContext(), estas, Toast.LENGTH_LONG).show();
-
-                        }else{
-                            habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"0");
-                            toke.setText("Token");
-                            DynamicToast.makeError(getBaseContext(), estas, Toast.LENGTH_LONG).show();
-                        }
-                        accesoHabilitado = habilitarAcceso;
                         String mensaje = "Usuario " + estas;
                         if (existeUsuario == false)
                             DynamicToast.makeError(getBaseContext(), mensaje, Toast.LENGTH_LONG).show();
+                        else{
+                            if (habilitarAcceso){
+                                habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"1");
+                                obtenerTokenDelUsuario(codigoUsuario);
+
+                                DynamicToast.makeSuccess(getBaseContext(), estas, Toast.LENGTH_LONG).show();
+
+                            }else{
+                                habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"0");
+                                toke.setText("Token");
+                                DynamicToast.makeError(getBaseContext(), estas, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        accesoHabilitado = habilitarAcceso;
+
                         //Toast.makeText(getBaseContext(), mensaje, Toast.LENGTH_LONG).show();
 
                         //DynamicToast.makeSuccess(getBaseContext(), mensaje, Toast.LENGTH_LONG).show();
