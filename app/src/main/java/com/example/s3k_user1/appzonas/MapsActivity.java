@@ -61,6 +61,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * type Maps activity.
+ */
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -68,14 +71,13 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int CONNECTION_RESOLUTION_REQUEST = 2;
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
 
-    private static final int REQUEST_PERMISSIONS_LOCATION_SETTINGS_REQUEST_CODE = 33;
-    private static final int REQUEST_PERMISSIONS_LAST_LOCATION_REQUEST_CODE = 34;
-    private static final int REQUEST_PERMISSIONS_CURRENT_LOCATION_REQUEST_CODE = 35;
-
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private Location mLastLocation;
 
+    /**
+     * User location.
+     */
     LatLng userLocation;
 
     private Button btnIngresarSistema;
@@ -85,25 +87,14 @@ public class MapsActivity extends AppCompatActivity implements
     private TextView txtImei;
 
     private TextView toke;
-    /**
-     * Permissions that need to be explicitly requested from end user.
-     */
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    /*
-     * funciono https://developer.here.com/documentation/android-starter/dev_guide/topics/request-android-permissions.html
-     *
-     * */
-
-    //Minimo tiempo para updates en Milisegundos
-    private static final long MIN_CAMBIO_DISTANCIA_PARA_UPDATES = 1; // 10 metros
-    //Minimo tiempo para updates en Milisegundos
-    private static final long MIN_TIEMPO_ENTRE_UPDATES = 1000 * 60 * 1; // 1 minuto
 
     private SupportMapFragment mapFragment;
     private List<Zonas> zonasList;
+    private String tokenUser;
 
+    /**
+     * Acceso habilitado.
+     */
     public boolean accesoHabilitado= false;
 
 
@@ -122,6 +113,11 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
 
+    /**
+     * Obtener imei string.
+     *
+     * @return retorna el imei
+     */
     public String obtenerIMEI() {
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -129,6 +125,12 @@ public class MapsActivity extends AppCompatActivity implements
         return imei;
 
     }
+
+    /**
+     * Obtener imei previamente permisos verificados.
+     *
+     * @return the string
+     */
     public String obtenerImeiYVerificarPermisos()
     {
 
@@ -156,7 +158,13 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-
+    /**
+     *
+     * Obtiene las Zonas de Trabajo y verifica si esta dentro de una Zona
+     * de un usuario segun su codigo
+     *
+     * @param codigoUsuario codigo del usuario
+     */
     public void obtenerDatosDelServicioZonasTrabajo(final String codigoUsuario) {
         //https://api.myjson.com/bins/wicz0
         String url = "http://192.168.1.36/legal/ZonaTrabajo/ZonaTrabajoListarJsonExterno?id="+codigoUsuario;
@@ -255,7 +263,6 @@ public class MapsActivity extends AppCompatActivity implements
                                 existeUsuario = true;
                                 break;
                             }
-                            //true
                         }
 
                         if (existeUsuario == false)
@@ -280,17 +287,13 @@ public class MapsActivity extends AppCompatActivity implements
                         }
                         accesoHabilitado = habilitarAcceso;
 
-                        //Toast.makeText(getBaseContext(), mensaje, Toast.LENGTH_LONG).show();
-
-                        //DynamicToast.makeSuccess(getBaseContext(), mensaje, Toast.LENGTH_LONG).show();
-
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //Log.e("Volley", error.toString());
+
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                    //Toast.makeText(getBaseContext(), "Tiempo de Respuesta, Vuelga Generar", Toast.LENGTH_LONG).show();
+
                     DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
             }
@@ -300,6 +303,12 @@ public class MapsActivity extends AppCompatActivity implements
 
     }
 
+    /**
+     * Habilitar acceso a zona trabajo usuario.
+     *
+     * @param zona                           the zona
+     * @param habilitarDeshabilitarUbicacion the habilitar deshabilitar ubicacion
+     */
     public void habilitarAccesoAZonaTrabajoUsuario(String zona, String habilitarDeshabilitarUbicacion){
         Log.w(TAG,"zona: "+ zona);
         String habilitarUbicacion =habilitarDeshabilitarUbicacion;
@@ -327,8 +336,14 @@ public class MapsActivity extends AppCompatActivity implements
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonObjReq);
     }
-    private String tokenUser;
-    private void enviarTokenAlServidor(String token , String imei) {
+
+    /**
+     * Enviar token de notificaciones (fcm) segun el imei registrado al servidor().
+     *
+     * @param token token para poder recibir notificaciones
+     * @param imei  imei del movil android
+     */
+    public void enviarTokenAlServidor(String token , String imei) {
 
 
         String URL = "http://192.168.1.36/legal/DispositivoUsuario/ActualizarTokenDispositivoDelUsuarioSegunImeiRegistradoJson?imei="+imei+"&token="+token;
@@ -375,6 +390,11 @@ public class MapsActivity extends AppCompatActivity implements
         requestQueue.add(jsonObjReq);
     }
 
+    /**
+     * Obtiene token de 4 digitos generados del servidor.
+     *
+     * @param codigoUsuario codigo del usuario
+     */
     public void obtenerTokenDelUsuario(final String codigoUsuario) {
         String codigUsuario = codigoUsuario;
         //http://192.168.1.36/legal/Token/TokenListarJsonExterno?id_usuario=1
@@ -492,9 +512,21 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * The constant TAG.
+     */
     public static final String TAG = "NOTICIAS";
+    /**
+     * The constant TOKEN.
+     */
     public static String TOKEN = "T";
+    /**
+     * The Codigo usuario.
+     */
     String codigoUsuario = "";
+    /**
+     * The Nombre usuario.
+     */
     String nombreUsuario = "";
 
     private BroadcastReceiver mHandler = new BroadcastReceiver() {
@@ -576,7 +608,7 @@ public class MapsActivity extends AppCompatActivity implements
             //btnIngresarSistema.callOnClick();
             textView.setText(nombreUsuario);
             obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
-            //obtenerTokenDelUsuario(codigoUsuario);
+
 
         }
 
@@ -592,8 +624,6 @@ public class MapsActivity extends AppCompatActivity implements
 
         //MiFirebaseInstanceIdService.tokenD;
         Log.w(TAG, "Token Main: " + token);
-
-
     }
 
 
