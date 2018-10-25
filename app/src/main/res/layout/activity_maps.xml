@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
 
             android:layout_weight="1"
-            tools:context=".MapsActivity"
+            tools:context=".ActividadPrincipal"
             tools:ignore="Suspicious0dp" />
 
     </LinearLayout>

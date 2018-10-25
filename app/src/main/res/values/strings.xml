@@ -36,8 +36,8 @@
     <string name="etiqueta_info_usuario">Información del usuario</string>
 
     <!--    MENU    -->
-    <string name="title_shop">Shop</string>
-    <string name="title_gifts">Gifts</string>
+    <string name="title_shop">Token</string>
+    <string name="title_gifts">Documentos</string>
     <string name="title_cart">Cart</string>
     <string name="title_profile">Login</string>
 </resources>

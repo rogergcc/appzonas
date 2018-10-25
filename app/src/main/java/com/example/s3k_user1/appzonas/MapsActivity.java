@@ -102,7 +102,9 @@ public class MapsActivity extends AppCompatActivity implements
     private SupportMapFragment mapFragment;
     private List<Zonas> zonasList;
     private String tokenUser;
-    private static final String IP_APK =  "http://192.168.1.39";
+    //http://192.168.1.36
+    //http://181.65.204.99:2222
+    private static final String IP_APK =  "http://192.168.1.36";
     /**
      * Acceso habilitado.
      */

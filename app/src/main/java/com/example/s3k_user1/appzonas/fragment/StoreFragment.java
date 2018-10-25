@@ -443,8 +443,8 @@ public class StoreFragment extends Fragment implements
 
         txtImei = (TextView) view.findViewById(R.id.txtImei);
 
-        //mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
-                //.findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment)getFragmentManager()
+                                .findFragmentById(R.id.map);
         //mapFragment.getMapAsync(this);
 
         //buildGoogleAPIClient();

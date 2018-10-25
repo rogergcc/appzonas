@@ -47,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment;
             switch (item.getItemId()) {
                 case R.id.navigation_shop:
-                    toolbar.setTitle("Shop");
+                    toolbar.setTitle("Token");
                     fragment = new StoreFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.navigation_gifts:
-                    toolbar.setTitle("My Gifts");
+                    toolbar.setTitle("Documentos");
                     fragment = new GiftsFragment();
                     loadFragment(fragment);
                     return true;
