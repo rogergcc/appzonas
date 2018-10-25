@@ -58,6 +58,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
@@ -109,6 +110,7 @@ public class StoreFragment extends Fragment implements
     private TextView toke;
 
     private SupportMapFragment mapFragment;
+    private MapView mapView;
     private List<Zonas> zonasList;
     private String tokenUser;
 
@@ -136,7 +138,7 @@ public class StoreFragment extends Fragment implements
             String nombreUsuario = intent.getStringExtra("nombreUsuario");
             textView.setText(nombreUsuario);
             //btnIngresarSistema.callOnClick();
-            //obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
+            obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
 
         }
     };
@@ -443,13 +445,16 @@ public class StoreFragment extends Fragment implements
 
         txtImei = (TextView) view.findViewById(R.id.txtImei);
 
-        mapFragment = (SupportMapFragment)getFragmentManager()
-                                .findFragmentById(R.id.map);
         //mapFragment.getMapAsync(this);
+        //mapFragment = (SupportMapFragment)getFragmentManager().findFragmentById(R.id.map);
 
         //buildGoogleAPIClient();
 
-
+        mapView = (MapView) view.findViewById(R.id.map);
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
+        mapView.getMapAsync(this);//when you already implement OnMapReadyCallback in your fragment
+        buildGoogleAPIClient();
         return view;
     }
 
@@ -545,6 +550,15 @@ public class StoreFragment extends Fragment implements
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 17.0f));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 17.0f));
         }
+    }
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
     @Override
