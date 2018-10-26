@@ -52,7 +52,7 @@ public class MiFirebaseMessagingService extends FirebaseMessagingService {
 
     private void mostrarNotificacion(String title, String body,String codigo, String nombre) {
 
-        Intent intent = new Intent(this, StoreFragment.class);
+        Intent intent = new Intent(this, MapsActivity.class);
 
         Intent intents = new Intent("com.example.s3k_user1.appzonas_FCM");
 

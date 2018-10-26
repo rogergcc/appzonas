@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    >
 
     <item
-        android:id="@+id/new_game"
-        android:icon="@drawable/logo"
-        android:title="asfs"
-        android:titleCondensed="@string/app_name"
+        android:id="@+id/documentos"
+        android:icon="@mipmap/ic_document"
+        android:title="Documents"
+
         app:showAsAction="always" />
 
+    <item android:id="@+id/action_settings"
+        android:orderInCategory="11"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
 </menu>

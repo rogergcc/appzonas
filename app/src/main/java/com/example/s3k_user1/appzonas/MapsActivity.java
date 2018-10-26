@@ -18,15 +18,21 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -44,6 +50,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.fragment.GiftsFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -651,21 +658,48 @@ public class MapsActivity extends AppCompatActivity implements
 
         }
     };
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String msg ="";Fragment fragment;
+        switch (item.getItemId()) {
 
+            case R.id.documentos:
+                msg="Documentos";
+                Intent intent1 = new Intent(this,DocumentosActivity.class);
+                startActivity(intent1);
+                return true;
+        }
 
+        Toast.makeText(MapsActivity.this, "MSG: "+msg, Toast.LENGTH_SHORT).show();
+        return super.onOptionsItemSelected(item);
+    }
+    private void loadFragment(Fragment fragment) {
+        // load fragment
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_container, fragment);
+        //transaction.addToBackStack(null);
+        transaction.commit();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.logo);
 
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setTitle("");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mHandler, new IntentFilter("com.example.s3k_user1.appzonas_FCM"));
         setContentView(R.layout.activity_maps);
 
+        toolbar = findViewById(R.id.toolbarmain);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+
+        toolbar.setLogo(R.drawable.logo);
         textView = (TextView) findViewById(R.id.TextView);
 
         toke= (TextView) findViewById(R.id.token);

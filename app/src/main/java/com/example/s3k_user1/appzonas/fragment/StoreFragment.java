@@ -277,6 +277,7 @@ public class StoreFragment extends Fragment implements
             @Override
             public void onErrorResponse(VolleyError error) {
 
+                Log.w("ERROR RESPONSE ZONAS: ", error.getMessage());
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
                     DynamicToast.makeWarning(getActivity(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
