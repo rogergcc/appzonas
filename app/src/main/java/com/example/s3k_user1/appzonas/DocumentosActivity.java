@@ -39,13 +39,14 @@ public class DocumentosActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         itemsList = new ArrayList<>();
         itemsList.add("PENDIENTES");
-        itemsList.add("OTROS");
-        itemsList.add("OTROS2");
+        itemsList.add("EN PROCESO");
+        itemsList.add("TERMINADOS");
+        itemsList.add("STAND BY");
         mAdapter = new StoreAdapter(this, itemsList);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(8), true));
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
@@ -140,8 +141,7 @@ public class DocumentosActivity extends AppCompatActivity {
             holder.name.setText(movie.get(0));
 
 
-            Glide.with(context)
-                    .load(movie.get(0));
+            //Glide.with(context).load(movie.get(0));
 
         }
 
