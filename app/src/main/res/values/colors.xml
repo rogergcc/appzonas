@@ -2,6 +2,9 @@
 <resources>
   <color name="window_background">#ffffff</color>
 
+  <color name="colorAppLegal">#9F8F82</color>
+
+
   <color name="primaryDarkColor">#323232</color>
   <color name="primaryColor">#484848</color>
   <color name="accentColor">#F87652</color>

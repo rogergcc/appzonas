@@ -85,6 +85,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.s3k_user1.appzonas.DocumentosActivity" />
         </activity>
+        <activity
+            android:name=".RechazarDocumentoActivity"
+            android:label="@string/title_activity_rechazar_documento"
+            android:parentActivityName=".DetalleDocumentosActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.s3k_user1.appzonas.DetalleDocumentosActivity" />
+        </activity>
     </application>
 
 </manifest>

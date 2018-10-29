@@ -1,7 +1,11 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+
+    android:id="@+id/det_doc_item_layout"
+    >
 
     <android.support.v7.widget.CardView
         android:id="@+id/detalle_documento_card_view"
@@ -35,7 +39,7 @@
                 android:textColor="#111"
                 android:textSize="11dp" />
             <TextView
-                android:id="@+id/price"
+                android:id="@+id/det_doc_fecha"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detalle_documento_title"
