@@ -20,31 +20,36 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DocumentosActivity extends AppCompatActivity {
+public class DetalleDocumentosActivity extends AppCompatActivity {
 
+    TextView tituloDetalle;
     private RecyclerView recyclerView;
     private List<String> itemsList;
-    private StoreAdapter mAdapter;
+    private DetalleDocumentosActivity.StoreAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_documentos);
+        setContentView(R.layout.activity_detalle_documentos);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(getIntent().getExtras().getString("vNombre"));
         setSupportActionBar(toolbar);
 
+        String intentDetalleAnterior = getIntent().getExtras().getString("vNombre");
 
-        recyclerView = findViewById(R.id.documento_recycler_view);
+        //tituloDetalle = findViewById(R.id.detalle_documentos_titulo);
+
+        recyclerView = findViewById(R.id.detalle_documento_recycler_view);
         itemsList = new ArrayList<>();
-        itemsList.add("PENDIENTES");
-        itemsList.add("EN PROCESO");
-        itemsList.add("TERMINADOS");
-        itemsList.add("STAND BY");
+        for (int i = 0; i <20 ; i++) {
+            itemsList.add(intentDetalleAnterior+" MEMONICO S0-"+i);
+        }
+
+
         mAdapter = new StoreAdapter(this, itemsList);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
@@ -53,7 +58,8 @@ public class DocumentosActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
-        
+
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +69,8 @@ public class DocumentosActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Documentos");
+
+
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
@@ -109,19 +116,19 @@ public class DocumentosActivity extends AppCompatActivity {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
-    class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.MyViewHolder> {
+    class StoreAdapter extends RecyclerView.Adapter<DetalleDocumentosActivity.StoreAdapter.MyViewHolder> {
         private Context context;
         private List<String> movieList;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            public CardView documentoCardView;
+            public CardView detalle_documentoCardView;
             public TextView name, price;
             public ImageView thumbnail;
 
             public MyViewHolder(View view) {
                 super(view);
-                documentoCardView = (CardView) view.findViewById(R.id.documento_card_view);
-                name = view.findViewById(R.id.title);
+                detalle_documentoCardView = (CardView) view.findViewById(R.id.detalle_documento_card_view);
+                name = view.findViewById(R.id.detalle_documento_title);
 
             }
         }
@@ -133,32 +140,20 @@ public class DocumentosActivity extends AppCompatActivity {
         }
 
         @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public DetalleDocumentosActivity.StoreAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.documentos_item, parent, false);
+                    .inflate(R.layout.detalle_documentos_item, parent, false);
 
-            return new MyViewHolder(itemView);
+            return new DetalleDocumentosActivity.StoreAdapter.MyViewHolder(itemView);
         }
 
         @Override
-        public void onBindViewHolder(MyViewHolder holder, final int position) {
+        public void onBindViewHolder(DetalleDocumentosActivity.StoreAdapter.MyViewHolder holder, final int position) {
             final List<String> movie = Collections.singletonList(movieList.get(position));
             holder.name.setText(movie.get(0));
 
 
-            holder.documentoCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("vFoto", 2);
-                    bundle.putString("vNombre", movie.get(0));
 
-
-                    Intent newDDocumentsActivity = new Intent(v.getContext(), DetalleDocumentosActivity.class);
-                    newDDocumentsActivity.putExtras(bundle);
-                    v.getContext().startActivity(newDDocumentsActivity);
-                }
-            });
             //Glide.with(context).load(movie.get(0));
 
             /*
@@ -178,4 +173,5 @@ public class DocumentosActivity extends AppCompatActivity {
             return movieList.size();
         }
     }
+
 }

@@ -76,6 +76,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.s3k_user1.appzonas.MapsActivity" />
         </activity>
+        <activity
+            android:name=".DetalleDocumentosActivity"
+            android:label="@string/title_activity_detalle_documentos"
+            android:parentActivityName=".DocumentosActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.s3k_user1.appzonas.DocumentosActivity" />
+        </activity>
     </application>
 
 </manifest>
