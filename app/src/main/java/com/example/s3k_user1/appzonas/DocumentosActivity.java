@@ -3,7 +3,11 @@ package com.example.s3k_user1.appzonas;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,24 +17,95 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.s3k_user1.appzonas.app.MyApplication;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class DocumentosActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private List<String> itemsList;
     private StoreAdapter mAdapter;
+    public void obtenerDatosDocumentosJson(final String codigoUsuario) {
+        //https://api.myjson.com/bins/wicz0
+        String url = "http://192.168.0.12/jsonFile.json";
+
+
+        //jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                url, (String) null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        JSONArray jRoutes = null;
+                        try {
+                            jRoutes = response.getJSONArray("documentosLista");
+
+                            for (int i = 0; i < jRoutes.length(); i++) {
+
+                                JSONObject jsonObject = jRoutes.getJSONObject(i);
+                                itemsList.add(jsonObject.getString("nombre"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +116,7 @@ public class DocumentosActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.documento_recycler_view);
         itemsList = new ArrayList<>();
-        itemsList.add("PENDIENTES");
-        itemsList.add("EN PROCESO");
-        itemsList.add("TERMINADOS");
-        itemsList.add("STAND BY");
+        obtenerDatosDocumentosJson(new String("$"));
         mAdapter = new StoreAdapter(this, itemsList);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
