@@ -28,6 +28,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.pranavpandey.android.dynamic.toasts.DynamicToast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,6 +56,51 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
     private List<Documento> documentoList;
     private DetalleDocumentosActivity.StoreAdapter mAdapter;
     private View vista;
+
+    public void obtenerDatosDocumentosJson() {
+        //https://api.myjson.com/bins/wicz0
+        String url = "http://192.168.0.12/documentosLista.json";
+
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                url, (String) null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        JSONArray jRoutes = null;
+                        try {
+                            jRoutes = response.getJSONArray("documentosLista");
+                            for (int i = 0; i < jRoutes.length(); i++) {
+                                JSONObject jsonObject = jRoutes.getJSONObject(i);
+
+                                Documento documentoNew = new Documento();
+                                documentoNew.setNombre(jsonObject.getString("nombre"));
+                                documentoNew.setDescripcion(jsonObject.getString("descripcion"));
+                                documentoNew.setTipoContrato(jsonObject.getString("tipoContrato"));
+                                documentoNew.setFecha(jsonObject.getString("fecha"));
+
+                                documentoList.add(documentoNew);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,13 +125,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         sdf.format(date);
 
-        for (int i = 0; i <20 ; i++) {
-            Documento documentoNew = new Documento();
-            documentoNew.setNombre("MEMONICO S0-"+i +" "+ intentDetalleAnterior);
-
-            documentoNew.setFecha(sdf.format(date));
-            documentoList.add(documentoNew);
-        }
+        obtenerDatosDocumentosJson();
 
 
         mAdapter = new StoreAdapter(this, documentoList);
@@ -184,6 +237,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         public void onBindViewHolder(DetalleDocumentosActivity.StoreAdapter.MyViewHolder holder, final int position) {
             final Documento documentoViewHolder = documentoList.get(position);
             holder.name.setText(documentoViewHolder.getNombre());
+
             holder.fecha.setText(documentoViewHolder.getFecha());
             //TODO inicializar Dialog
             myDialog = new Dialog(contextDetalleDocumento);
@@ -197,7 +251,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                     TextView memonico =  myDialog.findViewById(R.id.det_doc_tit_subt);
                     TextView fecha =  myDialog.findViewById(R.id.det_doc_fecha);
                     documento.setText(documentoViewHolder.getNombre());
-                    memonico.setText(documentoViewHolder.getNombre());
+                    memonico.setText(documentoViewHolder.getDescripcion());
                     fecha.setText(documentoViewHolder.getFecha());
                     botonAprobar = myDialog.findViewById(R.id.btnAprobar);
                     botonCancelar = myDialog.findViewById(R.id.btnCancelar);
