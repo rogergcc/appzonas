@@ -18,6 +18,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,6 +80,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * type Maps activity.
@@ -108,17 +111,147 @@ public class MapsActivity extends AppCompatActivity implements
 
     private SupportMapFragment mapFragment;
     private List<Zonas> zonasList;
+
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    private static final String IP_APK =  "http://192.168.1.36";
+    public static final String IP_APK =  "http://192.168.1.36";
     /**
      * Acceso habilitado.
      */
     public boolean accesoHabilitado= false;
 
+    /**
+     * The constant TAG.
+     */
+    public static final String TAG = "NOTICIAS";
+    /**
+     * The constant TOKEN.
+     */
+    public static String TOKEN = "T";
+    /**
+     * The Codigo usuario.
+     */
+    String codigoUsuario = "";
+    /**
+     * The Nombre usuario.
+     */
+    String nombreUsuario = "";
+
+    private long timeCountInMilliSeconds = 1 * 60000;
+    private enum TimerStatus {
+        STARTED,
+        STOPPED
+    }
+
+    private TimerStatus timerStatus = TimerStatus.STOPPED;
+    private CountDownTimer countDownTimer;
+    private void reset() {
+        stopCountDownTimer();
+        startCountDownTimer();
+    }
+
+    //TODO PROGRESSBAR CUSTOM
+    private TextView textViewTime;
+    private ProgressBar progressBarCircle;
+    private int TIEMPO_MINUTOS = 1;
+    private void setTimerValues() {
+        int time = 0;
+
+        time = TIEMPO_MINUTOS;
+        // assigning values after converting to milliseconds
+        // assigning values after converting to milliseconds
+        timeCountInMilliSeconds = time * 60 * 1000;
+    }
+    private void startStop() {
+
+        //startCountDownTimer();
+        //timerStatus = TimerStatus.STOPPED;
+
+        if (timerStatus == TimerStatus.STOPPED) {
+
+            // call to initialize the timer values
+            setTimerValues();
+            // call to initialize the progress bar values
+            setProgressBarValues();
+            // showing the reset icon
+            //imageViewReset.setVisibility(View.VISIBLE);
+            // changing play icon to stop icon
+            //imageViewStartStop.setImageResource(R.drawable.icon_stop);
+            // making edit text not editable
+            //editTextMinute.setEnabled(false);
+            // changing the timer status to started
+
+            timerStatus = TimerStatus.STARTED;
+            // call to start the count down timer
+            startCountDownTimer();
+
+        } else {
+
+            // hiding the reset icon
+            //imageViewReset.setVisibility(View.GONE);
+            // changing stop icon to start icon
+            //imageViewStartStop.setImageResource(R.drawable.icon_start);
+            // making edit text editable
+            //editTextMinute.setEnabled(true);
+            // changing the timer status to stopped
+            timerStatus = TimerStatus.STOPPED;
+            stopCountDownTimer();
+
+        }
+
+    }
+    private String hmsTimeFormatter(long milliSeconds) {
+
+        String hms = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(milliSeconds),
+                TimeUnit.MILLISECONDS.toMinutes(milliSeconds) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliSeconds)),
+                TimeUnit.MILLISECONDS.toSeconds(milliSeconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
+
+        return hms;
 
 
+    }
+    private void setProgressBarValues() {
+
+        progressBarCircle.setMax((int) timeCountInMilliSeconds / 1000);
+        progressBarCircle.setProgress((int) timeCountInMilliSeconds / 1000);
+    }
+    private void startCountDownTimer() {
+
+        countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
+
+                progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
+
+            }
+
+            @Override
+            public void onFinish() {
+
+                textViewTime.setText("Expirado");
+                toke.setText("TOKEN");
+                // call to initialize the progress bar values
+                setProgressBarValues();
+                // hiding the reset icon
+                //imageViewReset.setVisibility(View.GONE);
+                // changing stop icon to start icon
+                //imageViewStartStop.setImageResource(R.drawable.icon_start);
+                // making edit text editable
+                //editTextMinute.setEnabled(true);
+                // changing the timer status to stopped
+                timerStatus = TimerStatus.STOPPED;
+            }
+
+        }.start();
+        countDownTimer.start();
+    }
+    private void stopCountDownTimer() {
+        countDownTimer.cancel();
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -629,22 +762,7 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * The constant TAG.
-     */
-    public static final String TAG = "NOTICIAS";
-    /**
-     * The constant TOKEN.
-     */
-    public static String TOKEN = "T";
-    /**
-     * The Codigo usuario.
-     */
-    String codigoUsuario = "";
-    /**
-     * The Nombre usuario.
-     */
-    String nombreUsuario = "";
+
 
     private BroadcastReceiver mHandler = new BroadcastReceiver() {
         @Override
@@ -654,6 +772,7 @@ public class MapsActivity extends AppCompatActivity implements
             String nombreUsuario = intent.getStringExtra("nombreUsuario");
             textView.setText(nombreUsuario);
             //btnIngresarSistema.callOnClick();
+            startStop();
             obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
 
         }
@@ -700,11 +819,19 @@ public class MapsActivity extends AppCompatActivity implements
         getSupportActionBar().setTitle("");
 
         toolbar.setLogo(R.drawable.logo);
+
+
         textView = (TextView) findViewById(R.id.TextView);
 
-        toke= (TextView) findViewById(R.id.token);
 
+        toke= (TextView) findViewById(R.id.token);
         txtImei = (TextView) findViewById(R.id.txtImei);
+
+        //PROGRESSBAR
+        textViewTime = (TextView) findViewById(R.id.textViewTime);
+        progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
+
+        // FIN PROGRESSBAR
 
         btnIngresarSistema = (Button) findViewById(R.id.btnIngresarSistema);
 

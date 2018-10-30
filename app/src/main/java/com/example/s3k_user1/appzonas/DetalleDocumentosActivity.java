@@ -56,11 +56,11 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
     private List<Documento> documentoList;
     private DetalleDocumentosActivity.StoreAdapter mAdapter;
     private View vista;
-
+    private String IP_LEGAL = MapsActivity.IP_APK;
     public void obtenerDatosDocumentosJson() {
         //https://api.myjson.com/bins/wicz0
-        String url = "http://192.168.0.12/documentosLista.json";
-
+        //String url = "http://192.168.0.12/documentosLista.json";
+        String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson";
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -75,10 +75,10 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                                 JSONObject jsonObject = jRoutes.getJSONObject(i);
 
                                 Documento documentoNew = new Documento();
-                                documentoNew.setNombre(jsonObject.getString("nombre"));
-                                documentoNew.setDescripcion(jsonObject.getString("descripcion"));
-                                documentoNew.setTipoContrato(jsonObject.getString("tipoContrato"));
-                                documentoNew.setFecha(jsonObject.getString("fecha"));
+                                documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
+                                documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
+                                documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
+                                documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
 
                                 documentoList.add(documentoNew);
                             }
@@ -118,12 +118,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.detalle_documento_recycler_view);
         documentoList = new ArrayList<>();
-        final Date date = new Date(); // your date
-        final Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        sdf.format(date);
 
         obtenerDatosDocumentosJson();
 
@@ -138,14 +133,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         recyclerView.setNestedScrollingEnabled(false);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -249,22 +237,27 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 
                     TextView documento =  myDialog.findViewById(R.id.det_doc_tit_doc);
                     TextView memonico =  myDialog.findViewById(R.id.det_doc_tit_subt);
+                    TextView tipoContrato =  myDialog.findViewById(R.id.det_doc_tipo_contrato);
                     TextView fecha =  myDialog.findViewById(R.id.det_doc_fecha);
                     documento.setText(documentoViewHolder.getNombre());
-                    memonico.setText(documentoViewHolder.getDescripcion());
+                    memonico.setText("Memonico:" + documentoViewHolder.getDescripcion());
+                    tipoContrato.setText("Tipo Contrato:" + documentoViewHolder.getTipoContrato());
                     fecha.setText(documentoViewHolder.getFecha());
                     botonAprobar = myDialog.findViewById(R.id.btnAprobar);
                     botonCancelar = myDialog.findViewById(R.id.btnCancelar);
                     myDialog.show();
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("vNombreDocRechazar", documento.getText().toString());
+
                     botonCancelar.setOnClickListener(new View.OnClickListener() {
 
                         @Override
                         public void onClick(View v) {
+
+                            Bundle bundle = new Bundle();
+
+                            bundle.putString("vNombreDocRechazar", documentoViewHolder.getNombre());
                             Intent newDDocumentsActivity = new Intent(v.getContext(), RechazarDocumentoActivity.class);
-                            //newDDocumentsActivity.putExtras(bundle);
+                            newDDocumentsActivity.putExtras(bundle);
                             v.getContext().startActivity(newDDocumentsActivity);
                         }
                     });

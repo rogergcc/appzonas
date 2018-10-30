@@ -33,7 +33,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".SplashScreenActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -44,6 +44,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MapsActivity"
+            android:screenOrientation="portrait"
+            >
+
+        </activity>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main2" />
@@ -94,6 +102,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.s3k_user1.appzonas.DetalleDocumentosActivity" />
         </activity>
+
     </application>
 
 </manifest>
