@@ -6,13 +6,16 @@
 
     <item
         android:id="@+id/documentos"
-        android:icon="@mipmap/ic_document"
+        android:icon="@drawable/logo"
         android:title="Documents"
 
         app:showAsAction="always" />
 
-    <item android:id="@+id/action_settings"
+    <item
+        android:id="@+id/action_cambiar_ip"
+
         android:orderInCategory="11"
-        android:title="@string/action_settings"
+        android:title="CAMBIAR IP"
         app:showAsAction="never"/>
+
 </menu>

@@ -22,6 +22,7 @@ import android.os.CountDownTimer;
 import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -37,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -115,7 +117,7 @@ public class MapsActivity extends AppCompatActivity implements
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    public static final String IP_APK =  "http://192.168.1.36";
+    public static String IP_APK =  "http://192.168.1.36";
     /**
      * Acceso habilitado.
      */
@@ -146,6 +148,50 @@ public class MapsActivity extends AppCompatActivity implements
 
     private TimerStatus timerStatus = TimerStatus.STOPPED;
     private CountDownTimer countDownTimer;
+
+    //TODO dialog para cambiar IP
+    Dialog myDialogIP;
+    Button botonAprobarIP;
+    View vistaMaps;
+    // fin dialog para cambiar IP
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        myDialogIP = new Dialog(MapsActivity.this);
+        myDialogIP.setContentView(R.layout.dialog_cambiar_ip);
+        String msg ="";Fragment fragment;
+        switch (item.getItemId()) {
+
+            case R.id.documentos:
+                msg="Documentos";
+                Intent intent1 = new Intent(this,SplashScreenActivity.class);
+                startActivity(intent1);
+                return true;
+
+            case R.id.action_cambiar_ip:
+
+                final EditText dialog_edt_ip = myDialogIP.findViewById(R.id.dialog_edt_ip);
+                botonAprobarIP = myDialogIP.findViewById(R.id.btnAprobarIP);
+                //botonCancelar = myDialog.findViewById(R.id.btnCancelar);
+                dialog_edt_ip.setText(MapsActivity.IP_APK);
+                myDialogIP.show();
+                botonAprobarIP.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        MapsActivity.IP_APK = dialog_edt_ip.getText().toString();
+                        dialog_edt_ip.setText(MapsActivity.IP_APK);
+                        myDialogIP.hide();
+
+                    }
+                });
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void reset() {
         stopCountDownTimer();
         startCountDownTimer();
@@ -455,6 +501,7 @@ public class MapsActivity extends AppCompatActivity implements
                                     addresses.get(0).getFeatureName());
                             if (habilitarAcceso){
                                 habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"1");
+                                startStop();
                                 obtenerTokenDelUsuario(codigoUsuario);
 
                                 DynamicToast.makeSuccess(getBaseContext(), estas, Toast.LENGTH_LONG).show();
@@ -772,26 +819,12 @@ public class MapsActivity extends AppCompatActivity implements
             String nombreUsuario = intent.getStringExtra("nombreUsuario");
             textView.setText(nombreUsuario);
             //btnIngresarSistema.callOnClick();
-            startStop();
+
             obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
 
         }
     };
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        String msg ="";Fragment fragment;
-        switch (item.getItemId()) {
 
-            case R.id.documentos:
-                msg="Documentos";
-                Intent intent1 = new Intent(this,DocumentosActivity.class);
-                startActivity(intent1);
-                return true;
-        }
-
-        Toast.makeText(MapsActivity.this, "MSG: "+msg, Toast.LENGTH_SHORT).show();
-        return super.onOptionsItemSelected(item);
-    }
     private void loadFragment(Fragment fragment) {
         // load fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -820,7 +853,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         toolbar.setLogo(R.drawable.logo);
 
-
+        vistaMaps= findViewById(R.id.act_det_document);
         textView = (TextView) findViewById(R.id.TextView);
 
 
