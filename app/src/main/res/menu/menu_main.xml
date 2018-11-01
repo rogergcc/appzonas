@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/documentos"
-        android:icon="@drawable/logo"
+        android:icon="@drawable/legalex"
         android:title="Documents"
 
         app:showAsAction="always" />

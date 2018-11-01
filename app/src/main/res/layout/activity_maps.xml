@@ -15,7 +15,7 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
 
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:background="#9F8F82"
         android:id="@+id/toolbarmain"
         />
@@ -98,13 +98,13 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="160dp"
         >
         <ProgressBar
             android:id="@+id/progressBarCircle"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:layout_centerInParent="true"
             android:background="@drawable/drawable_circle_dark"
             android:indeterminate="false"
@@ -113,19 +113,15 @@
             android:progressDrawable="@drawable/drawable_circle"
             android:rotation="-90" />
         <TextView
-            android:id="@+id/textViewTime"
+            android:id="@+id/textViewTokenDigital"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/token"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
             android:gravity="center"
 
-            android:maxLength="15"
-            android:maxLines="1"
-            android:minEms="5"
-            android:text="00:05:00"
-            android:textStyle="bold"
+            android:text="Tu token Digital es:"
+
             android:textColor="@color/color_light"
             android:textColorHint="@color/colorAppLegal" />
         <TextView
@@ -136,8 +132,23 @@
             android:gravity="center"
             android:text="TOKEN"
             android:textSize="32dp"
-            android:textStyle="bold|italic" />
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/token"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
 
+            android:maxLength="15"
+            android:maxLines="1"
+            android:minEms="5"
+            android:text="segs restantes"
+
+            android:textColor="@color/color_light"
+            android:textColorHint="@color/colorAppLegal" />
     </RelativeLayout>
 
 

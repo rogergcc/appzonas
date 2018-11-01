@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -27,40 +28,53 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 public class SplashScreenActivity extends AppCompatActivity {
     private final int DURACION_SPLASH = 2000;
     public static String USUARIO="";
     public static String PASSWORD="";
     RelativeLayout rellay1, rellay2;
+    ImageView imagen_logo_splash_screen;
     Button btnIngresarPantallaTokenWeb;
     Button btnIngresarLogin;
     EditText edtusuario, edtcontrasena;
     Handler handler = new Handler();
-    Boolean respuestaLogin = false;
+
+    boolean respuestaLogin = false;
+    String mensajeLogin = "";
     View vista;
     private String IP_LEGAL = MapsActivity.IP_APK;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
             rellay1.setVisibility(View.VISIBLE);
+            imagen_logo_splash_screen.setImageResource(R.drawable.legal100);
+
             //rellay2.setVisibility(View.VISIBLE);
         }
     };
 
-    public boolean ValidacionLoginExternoJson(String usuLogin, String usuPassword) {
+    public void ValidacionLoginExternoJson(String usuLogin, String usuPassword) {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
 
-        final boolean respuestaL =false;
-        String url = IP_LEGAL + "/legal/Usuario/ValidacionLoginExternoJson?usuLogin="+usuLogin+"&usuPassword="+usuPassword;
+
+        String url = IP_LEGAL+"/legal/Usuario/ValidacionLoginExternoJson?usuLogin="+usuLogin+"&usuPassword="+usuPassword;
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-
-                                //respuestaL = jsonObject.getString("respuesta");
+                        try {
+                            String respuestSesion = jsonObject.getString("respuesta");
+                            String mensaje = jsonObject.getString("mensaje");
+                            respuestaLogin = Boolean.valueOf(respuestSesion);
+                            mensajeLogin = mensaje;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
 
                     }
@@ -88,6 +102,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         rellay1 = (RelativeLayout) findViewById(R.id.rellay1);
         rellay2 = (RelativeLayout) findViewById(R.id.rellay2);
+        imagen_logo_splash_screen = findViewById(R.id.imagen_logo_splash_screen);
 
         vista = findViewById(R.id.vistasplashScreen);
 
@@ -100,24 +115,30 @@ public class SplashScreenActivity extends AppCompatActivity {
         btnIngresarPantallaTokenWeb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtusuario.getText().toString()=="" ||
-                        edtcontrasena.getText().toString()=="") {
-                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }else{
-                    //ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
-                }
-
-                Intent intentPantalla = new Intent(SplashScreenActivity.this,MapsActivity.class);
-                startActivity(intentPantalla);
+                Intent intent1 = new Intent(SplashScreenActivity.this,MapsActivity.class);
+                startActivity(intent1);
             }
         });
         btnIngresarLogin = findViewById(R.id.btnIngresarLogin);
         btnIngresarLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1 = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-                startActivity(intent1);
+                if (edtusuario.getText().toString().equals("") ||
+                        edtcontrasena.getText().toString().equals("")) {
+                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }else{
+                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
+                    if (respuestaLogin){
+                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+                        startActivity(intentPantalla);
+                    }else{
+                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+
+                }
+
             }
         });
         /*new Handler().postDelayed(new Runnable(){

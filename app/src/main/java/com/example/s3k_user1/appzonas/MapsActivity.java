@@ -249,9 +249,8 @@ public class MapsActivity extends AppCompatActivity implements
     }
     private String hmsTimeFormatter(long milliSeconds) {
 
-        String hms = String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(milliSeconds),
-                TimeUnit.MILLISECONDS.toMinutes(milliSeconds) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliSeconds)),
+        String hms = String.format("%02d",
+
                 TimeUnit.MILLISECONDS.toSeconds(milliSeconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
 
         return hms;
@@ -269,7 +268,7 @@ public class MapsActivity extends AppCompatActivity implements
             @Override
             public void onTick(long millisUntilFinished) {
 
-                textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
+                textViewTime.setText("quedan "+ hmsTimeFormatter(millisUntilFinished) +" segs ");
 
                 progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
 
@@ -851,7 +850,7 @@ public class MapsActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
-        toolbar.setLogo(R.drawable.logo);
+        toolbar.setLogo(R.drawable.legal100);
 
         vistaMaps= findViewById(R.id.act_det_document);
         textView = (TextView) findViewById(R.id.TextView);
