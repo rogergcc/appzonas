@@ -3,9 +3,14 @@ package com.example.s3k_user1.appzonas;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
+import android.support.design.button.MaterialButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -38,7 +43,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     ImageView imagen_logo_splash_screen;
     Button btnIngresarPantallaTokenWeb;
     Button btnIngresarLogin;
-    EditText edtusuario, edtcontrasena;
+    TextInputEditText edtusuario;
+    AppCompatEditText edtcontrasena;
     Handler handler = new Handler();
 
     boolean respuestaLogin = false;
@@ -119,26 +125,28 @@ public class SplashScreenActivity extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
+
         btnIngresarLogin = findViewById(R.id.btnIngresarLogin);
         btnIngresarLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtusuario.getText().toString().equals("") ||
-                        edtcontrasena.getText().toString().equals("")) {
-                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }else{
-                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
-                    if (respuestaLogin){
-                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-                        startActivity(intentPantalla);
-                    }else{
-                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }
-
-                }
-
+//                if (edtusuario.getText().toString().equals("") ||
+//                        edtcontrasena.getText().toString().equals("")) {
+//                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+//                }else{
+//                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
+//                    if (respuestaLogin){
+//                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+//                        startActivity(intentPantalla);
+//                    }else{
+//                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
+//                                .setAction("Action", null).show();
+//                    }
+//
+//                }
+                Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+                startActivity(intentPantalla);
             }
         });
         /*new Handler().postDelayed(new Runnable(){

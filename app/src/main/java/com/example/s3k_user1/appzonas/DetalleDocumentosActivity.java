@@ -9,8 +9,10 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,12 +24,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -48,6 +53,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class DetalleDocumentosActivity extends AppCompatActivity {
 
@@ -57,10 +63,13 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
     private DetalleDocumentosActivity.StoreAdapter mAdapter;
     private View vista;
     private String IP_LEGAL = MapsActivity.IP_APK;
+
+    SwipeRefreshLayout mSwipeRefreshLayout;
+        //https://prmadi.com/handling_volley_request_when_network_connection_is_slow/
     public void obtenerDatosDocumentosJson() {
         //https://api.myjson.com/bins/wicz0
-        //String url = "http://192.168.0.12/documentosLista.json";
-        String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson";
+        String url = "http://192.168.0.12/documentosLista.json";
+        //String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson";
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -78,7 +87,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                                 documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
                                 documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
                                 documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
-                                documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
+                                documentoNew.setFecha(jsonObject.getString("fecha"));
 
                                 documentoList.add(documentoNew);
                             }
@@ -96,6 +105,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                 }
             }
         });
+        //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
 
@@ -117,21 +127,29 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         //tituloDetalle = findViewById(R.id.detalle_documentos_titulo);
 
         recyclerView = findViewById(R.id.detalle_documento_recycler_view);
-        documentoList = new ArrayList<>();
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
 
 
-        obtenerDatosDocumentosJson();
 
 
-        mAdapter = new StoreAdapter(this, documentoList);
-
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                shuffle();
+//                mSwipeRefreshLayout.setRefreshing(false);
+//            }
+//        });
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        documentoList = new ArrayList<>();
+        obtenerDatosDocumentosJson();
+        mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
-
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -141,6 +159,11 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 
     }
 
+    public void shuffle(){
+        //Collections.shuffle(documentoList, new Random(System.currentTimeMillis()));
+        //StoreAdapter adapter = new StoreAdapter(DetalleDocumentosActivity.this, documentoList);
+        //recyclerView.setAdapter(adapter);
+    }
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
         private int spanCount;
@@ -191,6 +214,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 
         Button botonAprobar, botonCancelar;
 
+        SwipeRefreshLayout mSwipeRefreshLayoutStore;
+
         public class MyViewHolder extends RecyclerView.ViewHolder {
             public CardView detalle_documentoCardView;
             public TextView name, fecha;
@@ -208,9 +233,10 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         }
 
 
-        public StoreAdapter(Context context, List<Documento> movieList) {
+        public StoreAdapter(Context context, List<Documento> movieList, SwipeRefreshLayout swip) {
             this.contextDetalleDocumento = context;
             this.movieList = movieList;
+            this.mSwipeRefreshLayoutStore= swip;
         }
 
         @Override
@@ -307,8 +333,25 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                     .into(holder.thumbnail);
             *
             * */
-        }
 
+            mSwipeRefreshLayoutStore.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    documentoList.clear();
+                    obtenerDatosDocumentosJson();
+                    refresh();
+                }
+            });
+        }
+        private void refresh(){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    StoreAdapter.this.notifyDataSetChanged();
+                    mSwipeRefreshLayoutStore.setRefreshing(false);
+                }
+            },4000);
+        }
         @Override
         public int getItemCount() {
             return movieList.size();
