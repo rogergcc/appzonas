@@ -29,7 +29,9 @@
             android:text="192.168.1.36"
             android:background="@color/color_light"
             android:textColor="#111"
-            android:inputType="number|numberDecimal"
+            android:inputType="text"
+
+            android:digits="http://0123456789."
             android:textStyle="bold"
             android:textSize="18sp"
             android:paddingVertical="5dp"
@@ -54,7 +56,7 @@
                 android:paddingHorizontal="10dp"
 
 
-                android:drawableLeft="@drawable/adt_ic_success"
+                android:drawableStart="@drawable/adt_ic_success"
                 />
 
         </LinearLayout>

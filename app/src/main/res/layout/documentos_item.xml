@@ -19,31 +19,40 @@
         card_view:cardCornerRadius="@dimen/card_album_radius"
         android:focusable="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:padding="@dimen/espacio_norma_1"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:src="@mipmap/check_file"
-                android:layout_height="match_parent" />
+
             <TextView
-                android:id="@+id/title"
+                android:drawableStart="@mipmap/check_file"
+                android:id="@+id/titleDocItem"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
 
-
+                android:text="@string/title_gifts"
                 android:paddingLeft="@dimen/card_title_padding"
 
                 android:paddingRight="@dimen/card_title_padding"
-
+                android:lines="2"
                 android:textColor="#111"
                 android:textSize="21sp" />
 
+            <TextView
+                android:id="@+id/subtitleDocItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/titleDocItem"
+                android:layout_marginRight="10dp"
+                android:gravity="right"
+                android:text="Tipo"
+                android:paddingBottom="@dimen/card_price_padding_bottom"
+                android:textColor="@color/accentColor"
+                android:textSize="11dp" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 

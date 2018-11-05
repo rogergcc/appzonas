@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/thumbnail"
                 android:lines="2"
-
+                android:text="asfasf"
                 android:paddingLeft="@dimen/card_title_padding"
                 android:paddingRight="@dimen/card_title_padding"
                 android:paddingTop="@dimen/card_title_padding"

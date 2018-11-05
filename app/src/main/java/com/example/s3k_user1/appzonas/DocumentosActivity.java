@@ -5,22 +5,35 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.Model.EstadoProceso;
+import com.pranavpandey.android.dynamic.toasts.DynamicToast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +42,56 @@ import java.util.List;
 public class DocumentosActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private List<String> itemsList;
+    private List<EstadoProceso> estadoProcesos;
     private StoreAdapter mAdapter;
+    private String IP_LEGAL = MapsActivity.IP_APK;
+    private static final String TAG = DetalleDocumentosActivity.class.getSimpleName();
+    public void obtenerEstadoProcesoStatusTramiteJson() {
+        //https://api.myjson.com/bins/wicz0
+        //String url = "http://192.168.0.12/documentosLista.json";
+        String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno";
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                url, (String) null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        JSONArray jRoutes = null;
+                        try {
+                            jRoutes = response.getJSONArray("estadosprocesos");
+                            for (int i = 0; i < jRoutes.length(); i++) {
+                                JSONObject jsonObject = jRoutes.getJSONObject(i);
+
+                                EstadoProceso estadoProceso = new EstadoProceso();
+                                estadoProceso.setEstadoProcesoId(jsonObject.getString("EstadoProcesoId"));
+                                estadoProceso.setNombre(jsonObject.getString("Nombre"));
+                                estadoProceso.setDescripcion(jsonObject.getString("Descripcion"));
+                                estadoProceso.setTipo(jsonObject.getString("Tipo"));
+                                estadoProceso.setEstado(jsonObject.getString("Estado"));
+
+                                estadoProcesos.add(estadoProceso);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Error: " + error.getMessage());
+
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+        //
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +101,9 @@ public class DocumentosActivity extends AppCompatActivity {
 
 
         recyclerView = findViewById(R.id.documento_recycler_view);
-        itemsList = new ArrayList<>();
-        itemsList.add("PENDIENTES");
-        itemsList.add("EN PROCESO");
-        itemsList.add("TERMINADOS");
-        itemsList.add("STAND BY");
-        mAdapter = new StoreAdapter(this, itemsList);
+        estadoProcesos = new ArrayList<>();
+        obtenerEstadoProcesoStatusTramiteJson();
+        mAdapter = new StoreAdapter(this, estadoProcesos);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -104,25 +162,25 @@ public class DocumentosActivity extends AppCompatActivity {
 
     class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.MyViewHolder> {
         private Context context;
-        private List<String> movieList;
+        private List<EstadoProceso> estadoProcesoList;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             public CardView documentoCardView;
-            public TextView name, price;
+            public TextView title, subtitle;
             public ImageView thumbnail;
 
             public MyViewHolder(View view) {
                 super(view);
                 documentoCardView = (CardView) view.findViewById(R.id.documento_card_view);
-                name = view.findViewById(R.id.title);
-
+                title = view.findViewById(R.id.titleDocItem);
+                subtitle = view.findViewById(R.id.subtitleDocItem);
             }
         }
 
 
-        public StoreAdapter(Context context, List<String> movieList) {
+        public StoreAdapter(Context context, List<EstadoProceso> estadoProcesoList) {
             this.context = context;
-            this.movieList = movieList;
+            this.estadoProcesoList = estadoProcesoList;
         }
 
         @Override
@@ -135,16 +193,16 @@ public class DocumentosActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
-            final List<String> movie = Collections.singletonList(movieList.get(position));
-            holder.name.setText(movie.get(0));
-
+            final EstadoProceso estadoProcesoViewHolder = estadoProcesos.get(position);
+            holder.title.setText(estadoProcesoViewHolder.getNombre());
+            holder.subtitle.setText(estadoProcesoViewHolder.getTipo());
 
             holder.documentoCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
                     bundle.putInt("vFoto", 2);
-                    bundle.putString("vNombre", movie.get(0));
+                    bundle.putString("vNombre", estadoProcesoViewHolder.getNombre());
 
 
                     Intent newDDocumentsActivity = new Intent(v.getContext(), DetalleDocumentosActivity.class);
@@ -155,7 +213,7 @@ public class DocumentosActivity extends AppCompatActivity {
             //Glide.with(context).load(movie.get(0));
 
             /*
-            * final Movie movie = movieList.get(position);
+            * final Movie movie = estadoProcesoList.get(position);
             holder.name.setText(movie.getTitle());
             holder.price.setText(movie.getPrice());
 
@@ -168,7 +226,7 @@ public class DocumentosActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return movieList.size();
+            return estadoProcesoList.size();
         }
     }
 }

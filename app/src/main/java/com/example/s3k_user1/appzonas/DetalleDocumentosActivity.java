@@ -19,6 +19,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -63,13 +64,13 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
     private DetalleDocumentosActivity.StoreAdapter mAdapter;
     private View vista;
     private String IP_LEGAL = MapsActivity.IP_APK;
-
+    private static final String TAG = DetalleDocumentosActivity.class.getSimpleName();
     SwipeRefreshLayout mSwipeRefreshLayout;
         //https://prmadi.com/handling_volley_request_when_network_connection_is_slow/
     public void obtenerDatosDocumentosJson() {
         //https://api.myjson.com/bins/wicz0
-        String url = "http://192.168.0.12/documentosLista.json";
-        //String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson";
+        //String url = "http://192.168.0.12/documentosLista.json";
+        String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson";
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -87,7 +88,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                                 documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
                                 documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
                                 documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
-                                documentoNew.setFecha(jsonObject.getString("fecha"));
+                                documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
 
                                 documentoList.add(documentoNew);
                             }
@@ -98,6 +99,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Error: " + error.getMessage());
 
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
@@ -108,7 +110,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
-
+        //
     }
 
     @Override
@@ -140,14 +142,16 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 //                mSwipeRefreshLayout.setRefreshing(false);
 //            }
 //        });
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
 
         documentoList = new ArrayList<>();
         obtenerDatosDocumentosJson();
         mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
 

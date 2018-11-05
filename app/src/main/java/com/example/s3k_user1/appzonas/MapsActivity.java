@@ -200,7 +200,7 @@ public class MapsActivity extends AppCompatActivity implements
     //TODO PROGRESSBAR CUSTOM
     private TextView textViewTime;
     private ProgressBar progressBarCircle;
-    private int TIEMPO_MINUTOS = 1;
+    private int TIEMPO_MINUTOS = 5;
     private void setTimerValues() {
         int time = 0;
 
@@ -500,9 +500,10 @@ public class MapsActivity extends AppCompatActivity implements
                                     addresses.get(0).getFeatureName());
                             if (habilitarAcceso){
                                 habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"1");
-                                startStop();
+
                                 obtenerTokenDelUsuario(codigoUsuario);
 
+                                startStop();
                                 DynamicToast.makeSuccess(getBaseContext(), estas, Toast.LENGTH_LONG).show();
 
                             }else{
@@ -703,6 +704,12 @@ public class MapsActivity extends AppCompatActivity implements
                     @Override
                     public void onResponse(JSONObject response) {
                         JSONArray jRoutes = null;
+                        try {
+                            TIEMPO_MINUTOS = Integer.parseInt(response.getString("tiempoexpiracion"));
+                            timeCountInMilliSeconds = TIEMPO_MINUTOS * timeCountInMilliSeconds;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         try {
                             jRoutes = response.getJSONArray("token");
                             for (int i = 0; i < jRoutes.length(); i++) {
