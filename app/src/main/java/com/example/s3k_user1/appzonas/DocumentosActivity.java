@@ -45,7 +45,8 @@ public class DocumentosActivity extends AppCompatActivity {
     private List<EstadoProceso> estadoProcesos;
     private StoreAdapter mAdapter;
     private String IP_LEGAL = MapsActivity.IP_APK;
-    private static final String TAG = DetalleDocumentosActivity.class.getSimpleName();
+    private static final String TAG = DocumentosActivity.class.getSimpleName();
+    public String EstadoID="";
     public void obtenerEstadoProcesoStatusTramiteJson() {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
@@ -70,6 +71,8 @@ public class DocumentosActivity extends AppCompatActivity {
                                 estadoProceso.setTipo(jsonObject.getString("Tipo"));
                                 estadoProceso.setEstado(jsonObject.getString("Estado"));
 
+                                String estadoID = estadoProceso.getEstadoProcesoId();
+                                estadoProceso.setCantidadDocsSegunEstadoProceso(obtenerDatosDocumentosJson(estadoID));
                                 estadoProcesos.add(estadoProceso);
                             }
                         } catch (JSONException e) {
@@ -92,6 +95,52 @@ public class DocumentosActivity extends AppCompatActivity {
         requestQueue.add(JsonObjectRequest);
         //
     }
+    public String obtenerDatosDocumentosJson(String estadoId) {
+        //https://api.myjson.com/bins/wicz0
+        //String url = "http://192.168.0.12/documentosLista.json";
+        final String[] cantidadRegistros = new String[1];
+        String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson?estadoProcesoId="+estadoId;
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                url, (String) null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String cantida = "";
+                        JSONObject jsonObject = response;
+                        //Log.w(getCallingActivity().getClassName(), response.toString());
+
+
+                        try {
+                            EstadoID = (response.getString("cantidad"));
+                            cantida = (response.getString("cantidad"));
+                            cantidadRegistros[0] = cantida;
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Error: " + error.getMessage());
+
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Docs", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+        //
+        return EstadoID;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +151,10 @@ public class DocumentosActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.documento_recycler_view);
         estadoProcesos = new ArrayList<>();
+        EstadoProceso estaProcesoPrimero = new EstadoProceso();
+        estaProcesoPrimero.setNombre("POR APROBAR");
+        estaProcesoPrimero.setEstadoProcesoId("0");
+        estadoProcesos.add(estaProcesoPrimero);
         obtenerEstadoProcesoStatusTramiteJson();
         mAdapter = new StoreAdapter(this, estadoProcesos);
 
@@ -166,7 +219,7 @@ public class DocumentosActivity extends AppCompatActivity {
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             public CardView documentoCardView;
-            public TextView title, subtitle;
+            public TextView title, subtitle,cantidad;
             public ImageView thumbnail;
 
             public MyViewHolder(View view) {
@@ -174,6 +227,7 @@ public class DocumentosActivity extends AppCompatActivity {
                 documentoCardView = (CardView) view.findViewById(R.id.documento_card_view);
                 title = view.findViewById(R.id.titleDocItem);
                 subtitle = view.findViewById(R.id.subtitleDocItem);
+                cantidad = view.findViewById(R.id.cantidadRe);
             }
         }
 
@@ -194,15 +248,16 @@ public class DocumentosActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final EstadoProceso estadoProcesoViewHolder = estadoProcesos.get(position);
+
             holder.title.setText(estadoProcesoViewHolder.getNombre());
             holder.subtitle.setText(estadoProcesoViewHolder.getTipo());
-
+            holder.cantidad.setText(estadoProcesoViewHolder.getCantidadDocsSegunEstadoProceso());
             holder.documentoCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
-                    bundle.putInt("vFoto", 2);
-                    bundle.putString("vNombre", estadoProcesoViewHolder.getNombre());
+                    bundle.putString("vIdEstadoDoc", estadoProcesoViewHolder.getEstadoProcesoId());
+                    bundle.putString("vNombreDoc", estadoProcesoViewHolder.getNombre());
 
 
                     Intent newDDocumentsActivity = new Intent(v.getContext(), DetalleDocumentosActivity.class);

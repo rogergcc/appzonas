@@ -8,16 +8,18 @@ public class EstadoProceso {
     public String Nombre;
     public String Descripcion;
     public String Estado;
+    public String CantidadDocsSegunEstadoProceso;
 
     public EstadoProceso() {
     }
 
-    public EstadoProceso(String estadoProcesoId, String tipo, String nombre, String descripcion, String estado) {
+    public EstadoProceso(String estadoProcesoId, String tipo, String nombre, String descripcion, String estado, String cantidadDocsSegunEstadoProceso) {
         EstadoProcesoId = estadoProcesoId;
         Tipo = tipo;
         Nombre = nombre;
         Descripcion = descripcion;
         Estado = estado;
+        CantidadDocsSegunEstadoProceso = cantidadDocsSegunEstadoProceso;
     }
 
     public String getEstadoProcesoId() {
@@ -58,5 +60,13 @@ public class EstadoProceso {
 
     public void setEstado(String estado) {
         Estado = estado;
+    }
+
+    public String getCantidadDocsSegunEstadoProceso() {
+        return CantidadDocsSegunEstadoProceso;
+    }
+
+    public void setCantidadDocsSegunEstadoProceso(String cantidadDocsSegunEstadoProceso) {
+        CantidadDocsSegunEstadoProceso = cantidadDocsSegunEstadoProceso;
     }
 }

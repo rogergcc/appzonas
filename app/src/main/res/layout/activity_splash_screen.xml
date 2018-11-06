@@ -85,6 +85,7 @@
                             android:layout_height="wrap_content"
                             android:paddingStart="15dp"
                             android:hint="Usuario"
+                            android:text="administrador"
                             android:drawableStart="@drawable/usuario"
                             android:drawablePadding="5dp"
                             android:drawableTint="@color/accentColor"
@@ -117,6 +118,7 @@
 
                         <android.support.v7.widget.AppCompatEditText
                             android:id="@+id/edtcontrasena"
+                            android:text="dm1nPJ"
                             android:textColor="#fff"
                             android:paddingStart="15dp"
                             android:layout_width="match_parent"

@@ -36,10 +36,24 @@
                 android:paddingLeft="@dimen/card_title_padding"
 
                 android:paddingRight="@dimen/card_title_padding"
-                android:lines="2"
+
                 android:textColor="#111"
                 android:textSize="21sp" />
+            <TextView
 
+                android:id="@+id/cantidadRe"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:layout_centerVertical="true"
+                android:text="cantidad"
+                android:paddingLeft="@dimen/card_title_padding"
+
+                android:paddingRight="@dimen/card_title_padding"
+
+                android:textColor="#111"
+                android:textSize="11sp" />
             <TextView
                 android:id="@+id/subtitleDocItem"
                 android:layout_width="match_parent"

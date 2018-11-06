@@ -42,6 +42,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
@@ -53,10 +54,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class DetalleDocumentosActivity extends AppCompatActivity {
+public class DetalleDocumentosActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    //https://www.androidhive.info/2012/08/android-session-management-using-shared-preferences/
 
     TextView tituloDetalle;
     private RecyclerView recyclerView;
@@ -67,10 +70,68 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
     private static final String TAG = DetalleDocumentosActivity.class.getSimpleName();
     SwipeRefreshLayout mSwipeRefreshLayout;
         //https://prmadi.com/handling_volley_request_when_network_connection_is_slow/
+    private String EstadoDoc = "";
+    SessionManager session;
+    String usuario = "";
+
+    // email
+    String id = "";
+    public void DocumentoPorEspecialistaListarExternoJson() {
+        //https://api.myjson.com/bins/wicz0
+        //String url = "http://192.168.0.12/documentosLista.json";
+        mSwipeRefreshLayout.setRefreshing(true);
+        Log.e(TAG,"E USUARIO ID: "+ id);
+        Log.w(TAG,"W USUARIO ID: "+ id);
+        Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id
+                , Toast.LENGTH_SHORT).show();
+        String url = IP_LEGAL + "/legal/Documento/DocumentoPorEspecialistaListarExternoJson?estadoProceso="+EstadoDoc+"&usuarioId="+id;
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                url, (String) null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        JSONArray jRoutes = null;
+                        try {
+                            jRoutes = response.getJSONArray("data");
+                            for (int i = 0; i < jRoutes.length(); i++) {
+                                JSONObject jsonObject = jRoutes.getJSONObject(i);
+
+                                Documento documentoNew = new Documento();
+                                documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
+                                documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
+                                documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
+                                documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
+
+                                documentoList.add(documentoNew);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Error: " + error.getMessage());
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+        //
+    }
+
     public void obtenerDatosDocumentosJson() {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
-        String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson";
+        String url = IP_LEGAL + "/legal/Documento/DocumentoListarExternoJson?estadoProcesoId="+EstadoDoc;
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -103,7 +164,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
-                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Docs", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -117,16 +178,30 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_documentos);
+
+        session = new SessionManager(getApplicationContext());
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getIntent().getExtras().getString("vNombre"));
+        String intentDocId = getIntent().getExtras().getString("vIdEstadoDoc");
+        EstadoDoc = intentDocId;
+        String intentDocNombre = getIntent().getExtras().getString("vNombreDoc");
+        toolbar.setTitle(getIntent().getExtras().getString("vNombreDoc"));
         setSupportActionBar(toolbar);
 
-        String intentDetalleAnterior = getIntent().getExtras().getString("vNombre");
+        session.checkLogin();
+
+        session.checkLogin();
+
+        HashMap<String, String> user = session.getUserDetails();
+
+        usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
+
+        id = user.get(SessionManager.KEY_USUARIO_ID);
 
         vista= findViewById(R.id.act_det_document);
 
 
-        //tituloDetalle = findViewById(R.id.detalle_documentos_titulo);
 
         recyclerView = findViewById(R.id.detalle_documento_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
@@ -145,7 +220,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
 
 
         documentoList = new ArrayList<>();
-        obtenerDatosDocumentosJson();
+        if(EstadoDoc.equals("0")){
+            DocumentoPorEspecialistaListarExternoJson();
+        }else{
+            obtenerDatosDocumentosJson();
+        }
+
         mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
@@ -153,6 +233,16 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mSwipeRefreshLayout.setRefreshing(true);
+
+                                        DocumentoPorEspecialistaListarExternoJson();
+                                    }
+                                }
+        );
         recyclerView.setNestedScrollingEnabled(false);
 
 
@@ -168,6 +258,13 @@ public class DetalleDocumentosActivity extends AppCompatActivity {
         //StoreAdapter adapter = new StoreAdapter(DetalleDocumentosActivity.this, documentoList);
         //recyclerView.setAdapter(adapter);
     }
+
+    @Override
+    public void onRefresh() {
+        DocumentoPorEspecialistaListarExternoJson();
+    }
+
+
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
         private int spanCount;

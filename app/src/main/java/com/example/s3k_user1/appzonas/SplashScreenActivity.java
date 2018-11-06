@@ -27,6 +27,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
@@ -37,7 +38,8 @@ import java.util.Map;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private final int DURACION_SPLASH = 2000;
-    public static String USUARIO="";
+    public static String USUARIOID="";
+    public static String USUARIONOMBRE="";
     public static String PASSWORD="";
     RelativeLayout rellay1, rellay2;
     ImageView imagen_logo_splash_screen;
@@ -51,6 +53,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     String mensajeLogin = "";
     View vista;
     private String IP_LEGAL = MapsActivity.IP_APK;
+
+
+    SessionManager session;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -76,6 +81,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                         try {
                             String respuestSesion = jsonObject.getString("respuesta");
                             String mensaje = jsonObject.getString("mensaje");
+                            USUARIOID =jsonObject.getString("usuarioId");
+                            USUARIONOMBRE =jsonObject.getString("usuarioNombre");
                             respuestaLogin = Boolean.valueOf(respuestSesion);
                             mensajeLogin = mensaje;
                         } catch (JSONException e) {
@@ -106,6 +113,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_splash_screen);
+        session = new SessionManager(getApplicationContext());
+
+
         rellay1 = (RelativeLayout) findViewById(R.id.rellay1);
         rellay2 = (RelativeLayout) findViewById(R.id.rellay2);
         imagen_logo_splash_screen = findViewById(R.id.imagen_logo_splash_screen);
@@ -130,23 +140,26 @@ public class SplashScreenActivity extends AppCompatActivity {
         btnIngresarLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (edtusuario.getText().toString().equals("") ||
-//                        edtcontrasena.getText().toString().equals("")) {
-//                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-//                }else{
-//                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
-//                    if (respuestaLogin){
-//                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-//                        startActivity(intentPantalla);
-//                    }else{
-//                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
-//                                .setAction("Action", null).show();
-//                    }
-//
-//                }
-                Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-                startActivity(intentPantalla);
+                if (edtusuario.getText().toString().equals("") ||
+                        edtcontrasena.getText().toString().equals("")) {
+                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }else{
+                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
+
+                    if (respuestaLogin){
+                        session.createLoginSession(USUARIONOMBRE, USUARIOID);
+
+                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+                        startActivity(intentPantalla);
+                    }else{
+                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+
+                }
+                //Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+                //startActivity(intentPantalla);
             }
         });
         /*new Handler().postDelayed(new Runnable(){

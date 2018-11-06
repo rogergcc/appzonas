@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="192.168.1.36"
+            android:text="192.168.1.46"
             android:background="@color/color_light"
             android:textColor="#111"
             android:inputType="text"
