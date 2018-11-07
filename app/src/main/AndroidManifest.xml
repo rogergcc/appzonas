@@ -59,6 +59,15 @@
 
         </activity>
         <activity
+            android:name=".ActividadConfiguracion"
+            android:label="@string/titulo_actividad_configuracion"
+            android:parentActivityName=".ActividadPrincipal" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ActividadPrincipal" />
+        </activity>
+
+        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main2" />
 

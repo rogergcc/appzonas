@@ -59,7 +59,7 @@ public class FragmentoCuenta extends Fragment {
     private void poblarViewPager(ViewPager viewPager) {
         AdaptadorSecciones adapter = new AdaptadorSecciones(getFragmentManager());
         adapter.addFragment(new FragmentoPerfil(), getString(R.string.titulo_tab_perfil));
-        adapter.addFragment(new FragmentoTarjetas(), "SESION");
+        adapter.addFragment(new FragmentoTarjetas(), "DOCUMENTOS");
 
         adapter.addFragment(new FragmentoDirecciones(), getString(R.string.titulo_tab_direcciones));
 

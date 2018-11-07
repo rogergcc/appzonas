@@ -12,11 +12,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import com.example.s3k_user1.appzonas.Sesion.SessionManager;
+
+import java.util.HashMap;
 
 public class ActividadPrincipal extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
+    SessionManager session;
+    String sesion_usuario = "";
 
+    // id
+    String sesion_id = "";
+
+    String sesion_empleado = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +38,17 @@ public class ActividadPrincipal extends AppCompatActivity {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        session = new SessionManager(getApplicationContext());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        sesion_usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
+        sesion_id = user.get(SessionManager.KEY_USUARIO_ID);
+        sesion_empleado = user.get(SessionManager.KEY_USUARIO_EMPLEADO);
+
+        View header = ((NavigationView)findViewById(R.id.nav_view)).getHeaderView(0);
+        ((TextView) header.findViewById(R.id.cabecera_usuario)).setText(sesion_usuario);
+        ((TextView) header.findViewById(R.id.cabecera_Nombre)).setText(sesion_empleado);
+
 
         if (navigationView != null) {
             prepararDrawer(navigationView);

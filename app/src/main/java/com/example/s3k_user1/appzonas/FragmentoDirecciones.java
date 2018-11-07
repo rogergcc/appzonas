@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
+import com.example.s3k_user1.appzonas.R;
 
 /**
  * Fragmento para la pestaña "DIRECCIONES" De la sección "Mi Cuenta"

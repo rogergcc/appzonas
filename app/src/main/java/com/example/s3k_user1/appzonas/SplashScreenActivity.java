@@ -40,7 +40,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private final int DURACION_SPLASH = 2000;
     public static String USUARIOID="";
     public static String USUARIONOMBRE="";
-    public static String PASSWORD="";
+    public static String USUARIOEMPLEADO="";
     RelativeLayout rellay1, rellay2;
     ImageView imagen_logo_splash_screen;
     Button btnIngresarPantallaTokenWeb;
@@ -79,10 +79,14 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         try {
+                            JSONObject objectUser = jsonObject.getJSONObject("usuario");
+
                             String respuestSesion = jsonObject.getString("respuesta");
                             String mensaje = jsonObject.getString("mensaje");
                             USUARIOID =jsonObject.getString("usuarioId");
                             USUARIONOMBRE =jsonObject.getString("usuarioNombre");
+
+                            USUARIOEMPLEADO =objectUser.getString("NombreEmpleado");
                             respuestaLogin = Boolean.valueOf(respuestSesion);
                             mensajeLogin = mensaje;
                         } catch (JSONException e) {
@@ -140,26 +144,26 @@ public class SplashScreenActivity extends AppCompatActivity {
         btnIngresarLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (edtusuario.getText().toString().equals("") ||
-//                        edtcontrasena.getText().toString().equals("")) {
-//                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-//                }else{
-//                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
-//
-//                    if (respuestaLogin){
-//                        session.createLoginSession(USUARIONOMBRE, USUARIOID);
-//
-//                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-//                        startActivity(intentPantalla);
-//                    }else{
-//                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
-//                                .setAction("Action", null).show();
-//                    }
-//
-//                }
-                Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
-                startActivity(intentPantalla);
+                if (edtusuario.getText().toString().equals("") ||
+                        edtcontrasena.getText().toString().equals("")) {
+                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }else{
+                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
+
+                    if (respuestaLogin){
+                        session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO);
+
+                        Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
+                        startActivity(intentPantalla);
+                    }else{
+                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+
+                }
+                //Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
+                //startActivity(intentPantalla);
             }
         });
         /*new Handler().postDelayed(new Runnable(){

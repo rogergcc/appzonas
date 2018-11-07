@@ -180,6 +180,10 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         setContentView(R.layout.activity_detalle_documentos);
 
         session = new SessionManager(getApplicationContext());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
+        id = user.get(SessionManager.KEY_USUARIO_ID);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -189,15 +193,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         toolbar.setTitle(getIntent().getExtras().getString("vNombreDoc"));
         setSupportActionBar(toolbar);
 
-        session.checkLogin();
 
-        session.checkLogin();
-
-        HashMap<String, String> user = session.getUserDetails();
-
-        usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
-
-        id = user.get(SessionManager.KEY_USUARIO_ID);
 
         vista= findViewById(R.id.act_det_document);
 
