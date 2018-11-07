@@ -140,26 +140,26 @@ public class SplashScreenActivity extends AppCompatActivity {
         btnIngresarLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtusuario.getText().toString().equals("") ||
-                        edtcontrasena.getText().toString().equals("")) {
-                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }else{
-                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
-
-                    if (respuestaLogin){
-                        session.createLoginSession(USUARIONOMBRE, USUARIOID);
-
-                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-                        startActivity(intentPantalla);
-                    }else{
-                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }
-
-                }
-                //Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
-                //startActivity(intentPantalla);
+//                if (edtusuario.getText().toString().equals("") ||
+//                        edtcontrasena.getText().toString().equals("")) {
+//                    Snackbar.make(vista, "Ingrese datos", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+//                }else{
+//                    ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
+//
+//                    if (respuestaLogin){
+//                        session.createLoginSession(USUARIONOMBRE, USUARIOID);
+//
+//                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+//                        startActivity(intentPantalla);
+//                    }else{
+//                        Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
+//                                .setAction("Action", null).show();
+//                    }
+//
+//                }
+                Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
+                startActivity(intentPantalla);
             }
         });
         /*new Handler().postDelayed(new Runnable(){

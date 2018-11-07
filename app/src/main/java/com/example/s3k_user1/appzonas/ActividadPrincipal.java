@@ -1,5 +1,6 @@
 package com.example.s3k_user1.appzonas;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -72,10 +73,10 @@ public class ActividadPrincipal extends AppCompatActivity {
                 break;
             /*case R.id.item_categorias:
                 fragmentoGenerico = new FragmentoCategorias();
-                break;
+                break;*/
             case R.id.item_configuracion:
                 startActivity(new Intent(this, ActividadConfiguracion.class));
-                break;*/
+                break;
         }
         if (fragmentoGenerico != null) {
             fragmentManager
