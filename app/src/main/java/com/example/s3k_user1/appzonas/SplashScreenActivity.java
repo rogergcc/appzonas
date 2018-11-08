@@ -27,6 +27,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.Others.UploadImageActivity;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
@@ -154,7 +155,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     if (respuestaLogin){
                         session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO);
 
-                        Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
+                        Intent intentPantalla = new Intent(SplashScreenActivity.this,UploadImageActivity.class);
                         startActivity(intentPantalla);
                     }else{
                         Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
