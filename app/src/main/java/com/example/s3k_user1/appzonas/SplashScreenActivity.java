@@ -151,6 +151,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                 }else{
                     ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
+                    Toast.makeText(SplashScreenActivity.this,
+                            "resp: " + respuestaLogin,
+                            Toast.LENGTH_SHORT).show();
 
                     if (respuestaLogin){
                         session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO);

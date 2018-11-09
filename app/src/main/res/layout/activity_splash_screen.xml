@@ -23,32 +23,33 @@
             android:scaleType="fitCenter"
             android:layout_centerHorizontal="true"
             android:src="@drawable/legalex" />
+
         <RelativeLayout
             android:id="@+id/rellay1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:visibility="gone"
-            >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/tv_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-
                 android:layout_centerHorizontal="true"
+
+                android:layout_marginTop="50dp"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Login"
                 android:textColor="#FFF"
                 android:textSize="30sp" />
+
             <TextView
                 android:id="@+id/tv_loginTramite"
-                android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
                 android:fontFamily="sans-serif-condensed"
+                android:padding="10dp"
                 android:text="Sistema Tramite Documentario."
                 android:textColor="#FFF"
                 android:textSize="13sp" />
@@ -64,8 +65,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_marginHorizontal="15dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
                     android:orientation="vertical">
 
 
@@ -80,19 +81,19 @@
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/edtusuario"
-                            android:textColor="#fff"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingStart="15dp"
-                            android:hint="Usuario"
-                            android:text="administrador"
-                            android:drawableStart="@drawable/usuario"
+                            android:backgroundTint="@color/accentColor"
                             android:drawablePadding="5dp"
+                            android:drawableStart="@drawable/usuario"
                             android:drawableTint="@color/accentColor"
                             android:fontFamily="sans-serif-light"
+                            android:hint="Usuario"
+                            android:inputType="text"
+                            android:paddingStart="15dp"
 
-                            android:backgroundTint="@color/accentColor"
-                            android:inputType="text" />
+                            android:text="administrador"
+                            android:textColor="#fff" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -101,36 +102,36 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="vertical">
 
                     <android.support.design.widget.TextInputLayout
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:errorEnabled="true"
                         android:textColorHint="@color/backgroundactivity"
-                        app:passwordToggleTint="@color/accentColor"
+                        app:errorEnabled="true"
+                        app:passwordToggleEnabled="true"
 
 
-                        app:passwordToggleEnabled="true">
+                        app:passwordToggleTint="@color/accentColor">
 
                         <android.support.v7.widget.AppCompatEditText
                             android:id="@+id/edtcontrasena"
-                            android:text="dm1nPJ"
-                            android:textColor="#fff"
-                            android:paddingStart="15dp"
                             android:layout_width="match_parent"
-                            android:drawableStart="@drawable/contrasena"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/accentColor"
                             android:drawablePadding="5dp"
+                            android:drawableStart="@drawable/contrasena"
                             android:drawableTint="@color/accentColor"
                             android:fontFamily="sans-serif-light"
-                            android:layout_height="wrap_content"
                             android:hint="Contraseña"
-                            android:backgroundTint="@color/accentColor"
+                            android:inputType="textPassword"
+                            android:paddingStart="15dp"
+                            android:text="dm1nPJ"
                             android:textAllCaps="true"
-                            android:inputType="textPassword" />
+                            android:textColor="#fff" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -140,38 +141,42 @@
             </LinearLayout>
 
             <Button
-                android:backgroundTint="@color/colorAppLegal"
+
                 android:id="@+id/btnIngresarLogin"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/linlay1"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="50dp"
-                android:theme="@style/MyButton"
                 android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="50dp"
                 android:fontFamily="sans-serif-medium"
+                android:padding="@dimen/activity_horizontal_margin"
                 android:paddingLeft="70dp"
                 android:paddingRight="70dp"
-
                 android:text="INGRESAR"
+
                 android:textAllCaps="false"
-                android:textColor="#fff"
-                android:textSize="16sp" />
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:theme="@style/MyButton" />
+
             <Button
                 android:id="@+id/btnIngresarSisWebToken"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/btnIngresarLogin"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
                 android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif-medium"
+                android:padding="@dimen/activity_horizontal_margin"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
-                android:text="Ingresar Pantalla token"
+                android:text="TOKEN WEB"
                 android:textAllCaps="false"
-                android:textColor="#111"
-                android:textSize="16sp" />
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:theme="@style/MyButton" />
         </RelativeLayout>
     </RelativeLayout>
 
