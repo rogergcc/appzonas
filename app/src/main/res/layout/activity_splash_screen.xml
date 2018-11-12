@@ -38,7 +38,7 @@
 
                 android:layout_marginTop="50dp"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Login"
+                android:text="Bienvenido"
                 android:textColor="#FFF"
                 android:textSize="30sp" />
 
@@ -131,7 +131,7 @@
                             android:hint="Contraseña"
                             android:inputType="textPassword"
                             android:paddingStart="15dp"
-                            android:text="dm1nPJ"
+                            android:text="1111"
                             android:textAllCaps="true"
                             android:textColor="#fff" />
 

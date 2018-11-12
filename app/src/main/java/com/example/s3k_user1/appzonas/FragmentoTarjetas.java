@@ -29,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.EstadoProceso;
+import com.example.s3k_user1.appzonas.app.MyApplication;
 import com.google.android.gms.maps.MapView;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
@@ -51,12 +52,14 @@ public class FragmentoTarjetas extends Fragment {
     private List<EstadoProceso> estadoProcesos;
     private StoreAdapter mAdapter;
     private String IP_LEGAL = MapsActivity.IP_APK;
-    private static final String TAG = DocumentosActivity.class.getSimpleName();
+    private static final String TAG = "Fragmento_Tarjetas_Docs";
     public String EstadoID="";
 
     public void obtenerEstadoProcesoStatusTramiteJson() {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
+        Log.e(TAG,"entro a obtenerEstadoProcesoStatusTramiteJson");
+
         String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno";
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
@@ -85,6 +88,7 @@ public class FragmentoTarjetas extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        mAdapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -98,22 +102,25 @@ public class FragmentoTarjetas extends Fragment {
             }
         });
         //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
+        //MyApplication.getInstance().addToRequestQueue(JsonObjectRequest);
+        //
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(JsonObjectRequest);
-        //
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
-        View view = inflater.inflate(R.layout.activity_documentos, container, false);
+        View view = inflater.inflate(R.layout.fragmento_tarjetas, container, false);
 
-        recyclerView = view.findViewById(R.id.documento_recycler_view);
+
+
+        recyclerView = view.findViewById(R.id.recycler_view_tarjetas);
         estadoProcesos = new ArrayList<>();
         EstadoProceso estaProcesoPrimero = new EstadoProceso();
         estaProcesoPrimero.setNombre("POR APROBAR");
-        estaProcesoPrimero.setEstadoProcesoId("0");
+        estaProcesoPrimero.setEstadoProcesoId("26");
         estadoProcesos.add(estaProcesoPrimero);
         obtenerEstadoProcesoStatusTramiteJson();
 

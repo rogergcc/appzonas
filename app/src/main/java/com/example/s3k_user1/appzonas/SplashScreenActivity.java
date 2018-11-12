@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -71,7 +72,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
 
-
+        Log.e("MENSAJE VALIDA: ", "u:" + usuLogin + " - "+ usuPassword);
         String url = IP_LEGAL+"/legal/Usuario/ValidacionLoginExternoJson?usuLogin="+usuLogin+"&usuPassword="+usuPassword;
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url, (String) null,
@@ -79,6 +80,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONObject jsonObject) {
+                        Log.e("MENSAJE VALIDA: ", jsonObject.toString());
                         try {
                             JSONObject objectUser = jsonObject.getJSONObject("usuario");
 
@@ -106,6 +108,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
             }
         });
+
+        Toast.makeText(SplashScreenActivity.this,
+                "resp_F_validacion: " + respuestaLogin,
+                Toast.LENGTH_SHORT).show();
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
 
@@ -151,14 +158,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                 }else{
                     ValidacionLoginExternoJson(edtusuario.getText().toString(),edtcontrasena.getText().toString());
-                    Toast.makeText(SplashScreenActivity.this,
-                            "resp: " + respuestaLogin,
-                            Toast.LENGTH_SHORT).show();
+
 
                     if (respuestaLogin){
                         session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO);
 
-                        Intent intentPantalla = new Intent(SplashScreenActivity.this,UploadImageActivity.class);
+                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
                         startActivity(intentPantalla);
                     }else{
                         Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)

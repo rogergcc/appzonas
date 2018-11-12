@@ -1,10 +1,12 @@
 package com.example.s3k_user1.appzonas;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,8 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +34,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.EstadoProceso;
+import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
@@ -37,6 +43,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class DocumentosActivity extends AppCompatActivity {
@@ -47,17 +54,24 @@ public class DocumentosActivity extends AppCompatActivity {
     private String IP_LEGAL = MapsActivity.IP_APK;
     private static final String TAG = DocumentosActivity.class.getSimpleName();
     public String EstadoID="";
+    SessionManager session;
+    String usuario = "";
+
+    // email
+    String id = "";
+
     public void obtenerEstadoProcesoStatusTramiteJson() {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
         String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno";
+        Log.e("EstadoProcesoStatus: ", url);
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        Log.e("EstadoProcesoStatus: ", response.toString());
                         JSONArray jRoutes = null;
                         try {
                             jRoutes = response.getJSONArray("estadosprocesos");
@@ -70,9 +84,9 @@ public class DocumentosActivity extends AppCompatActivity {
                                 estadoProceso.setDescripcion(jsonObject.getString("Descripcion"));
                                 estadoProceso.setTipo(jsonObject.getString("Tipo"));
                                 estadoProceso.setEstado(jsonObject.getString("Estado"));
-
-                                String estadoID = estadoProceso.getEstadoProcesoId();
-                                estadoProceso.setCantidadDocsSegunEstadoProceso(obtenerDatosDocumentosJson(estadoID));
+                                estadoProceso.setCantidadDocsSegunEstadoProceso(jsonObject.getString("CantidaDocumentoxEstado"));
+                                //String estadoID = estadoProceso.getEstadoProcesoId();
+                                //estadoProceso.setCantidadDocsSegunEstadoProceso(obtenerDatosDocumentosJson(estadoID));
                                 estadoProcesos.add(estadoProceso);
                             }
                         } catch (JSONException e) {
@@ -140,11 +154,39 @@ public class DocumentosActivity extends AppCompatActivity {
         //
         return EstadoID;
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sesion_usuario, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        String msg ="";Fragment fragment;
+        switch (item.getItemId()) {
+
+            case R.id.cerrar_sesion:
+                msg="Sesion";
+                session.logoutUser();
+                Intent intent1 = new Intent(this,SplashScreenActivity.class);
+                startActivity(intent1);
+                return true;
+
+
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_documentos);
+        session = new SessionManager(getApplicationContext());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
+        id = user.get(SessionManager.KEY_USUARIO_ID);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -153,7 +195,7 @@ public class DocumentosActivity extends AppCompatActivity {
         estadoProcesos = new ArrayList<>();
         EstadoProceso estaProcesoPrimero = new EstadoProceso();
         estaProcesoPrimero.setNombre("POR APROBAR");
-        estaProcesoPrimero.setEstadoProcesoId("0");
+        estaProcesoPrimero.setEstadoProcesoId("26");
         estadoProcesos.add(estaProcesoPrimero);
         obtenerEstadoProcesoStatusTramiteJson();
         mAdapter = new StoreAdapter(this, estadoProcesos);

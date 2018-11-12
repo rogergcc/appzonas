@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -18,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -72,7 +75,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         Log.w(TAG,"W USUARIO ID: "+ id);
         Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id
                 , Toast.LENGTH_SHORT).show();
-        String url = IP_LEGAL + "/legal/Documento/DocumentoPorEspecialistaListarExternoJson?estadoProceso="+EstadoDoc+"&usuarioId="+id;
+        String url = IP_LEGAL + "/legal/Documento/DocumentoPorEspecialistaListarExternoJson?estadoProcesoId="+EstadoDoc+"&usuarioId="+id;
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -161,7 +164,29 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         requestQueue.add(JsonObjectRequest);
         //
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sesion_usuario, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        String msg ="";Fragment fragment;
+        switch (item.getItemId()) {
+
+            case R.id.cerrar_sesion:
+                msg="Sesion";
+                session.logoutUser();
+                Intent intent1 = new Intent(this,SplashScreenActivity.class);
+                startActivity(intent1);
+                return true;
+
+
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -204,12 +229,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
 
         documentoList = new ArrayList<>();
-        if(EstadoDoc.equals("0")){
-            DocumentoPorEspecialistaListarExternoJson();
-        }else{
-            obtenerDatosDocumentosJson();
-        }
-
+//        if(EstadoDoc.equals("26")){
+//            DocumentoPorEspecialistaListarExternoJson();
+//        }else{
+//            obtenerDatosDocumentosJson();
+//        }
+        DocumentoPorEspecialistaListarExternoJson();
         mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
