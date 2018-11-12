@@ -1,28 +1,28 @@
-package com.example.s3k_user1.appzonas;
+package com.example.s3k_user1.appzonas.Model;
 
 
 
 public class Zonas {
 
 
-    public String ZonaTrabajoId;
+    private String ZonaTrabajoId;
 
-    public String Descripcion;
+    private String Descripcion;
 
-    public String UsuarioID;
-    public String Direccion;
-
-
-    public String Latitud;
+    private String UsuarioID;
+    private String Direccion;
 
 
-    public String Longitud;
+    private String Latitud;
 
-    public String Radio;
 
-    public String DentroZona;
+    private String Longitud;
 
-    public String Estado;
+    private String Radio;
+
+    private String DentroZona;
+
+    private String Estado;
 
     public Zonas() {
     }

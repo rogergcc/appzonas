@@ -1,13 +1,13 @@
-package com.example.s3k_user1.appzonas;
+package com.example.s3k_user1.appzonas.Model;
 
 public class Documento {
-    public String Nombre;
+    private String Nombre;
 
-    public String Descripcion;
+    private String Descripcion;
 
-    public String TipoContrato;
-    public String Fecha;
-    public String Estado;
+    private String TipoContrato;
+    private String Fecha;
+    private String Estado;
 
     public Documento() {
 

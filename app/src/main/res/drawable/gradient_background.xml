@@ -8,6 +8,7 @@
         android:endColor="@color/primaryColor"
         android:type="linear"
         android:startColor="@color/primaryDarkColor"
+
         />
 
 </shape>

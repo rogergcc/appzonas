@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MyButton" parent="Base.AppTheme">
+        <item name="colorControlHighlight">@color/primaryDarkColor</item>
+        <item name="android:buttonCornerRadius">15dp</item>
+        <item name="colorButtonNormal">@color/accentColor</item>
+    </style>
+</resources>

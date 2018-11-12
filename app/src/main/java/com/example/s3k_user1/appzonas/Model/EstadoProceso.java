@@ -1,14 +1,14 @@
 package com.example.s3k_user1.appzonas.Model;
 
 public class EstadoProceso {
-    public String EstadoProcesoId;
+    private String EstadoProcesoId;
 
-    public String Tipo;
+    private String Tipo;
 
-    public String Nombre;
-    public String Descripcion;
-    public String Estado;
-    public String CantidadDocsSegunEstadoProceso;
+    private String Nombre;
+    private String Descripcion;
+    private String Estado;
+    private String CantidadDocsSegunEstadoProceso;
 
     public EstadoProceso() {
     }
