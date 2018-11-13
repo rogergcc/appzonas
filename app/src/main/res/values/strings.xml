@@ -16,6 +16,7 @@
     <string name="item_cuenta">Mi Cuenta</string>
     <string name="item_categorias">Categorías</string>
     <string name="item_configuracion">Configuración</string>
+    <string name="item_cerraSesion">Cerrar Sesión</string>
 
     <string name="titulo_comidas_populares">Lo más pedido</string>
 

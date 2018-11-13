@@ -53,7 +53,7 @@ public class ActividadPrincipal extends AppCompatActivity {
         if (navigationView != null) {
             prepararDrawer(navigationView);
             // Seleccionar item por defecto
-            seleccionarItem(navigationView.getMenu().getItem(0));
+            seleccionarItem(navigationView.getMenu().getItem(1));
         }
     }
 
@@ -100,6 +100,10 @@ public class ActividadPrincipal extends AppCompatActivity {
             case R.id.item_configuracion:
                 startActivity(new Intent(this, ActividadConfiguracion.class));
                 break;
+            case R.id.item_cerraSesion:
+                session.logoutUser();
+                Intent intent1 = new Intent(this,SplashScreenActivity.class);
+                startActivity(intent1);
         }
         if (fragmentoGenerico != null) {
             fragmentManager

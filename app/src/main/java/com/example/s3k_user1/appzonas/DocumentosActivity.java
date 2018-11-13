@@ -61,9 +61,10 @@ public class DocumentosActivity extends AppCompatActivity {
     String id = "";
 
     public void obtenerEstadoProcesoStatusTramiteJson() {
+        final List<EstadoProceso> procesoListScope = new ArrayList<>();
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
-        String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno";
+        String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno?usuarioId="+id;
         Log.e("EstadoProcesoStatus: ", url);
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
@@ -88,7 +89,9 @@ public class DocumentosActivity extends AppCompatActivity {
                                 //String estadoID = estadoProceso.getEstadoProcesoId();
                                 //estadoProceso.setCantidadDocsSegunEstadoProceso(obtenerDatosDocumentosJson(estadoID));
                                 estadoProcesos.add(estadoProceso);
+                                //estadoProcesos.addAll(procesoListScope);
                             }
+                            Log.e("estadoProcesos.size Sco", String.valueOf(procesoListScope.size()));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -104,10 +107,12 @@ public class DocumentosActivity extends AppCompatActivity {
                 }
             }
         });
+        //Log.e("SIZE", String.valueOf(estadoProcesos.get(2).toString()));
         //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
         //
+
     }
     public String obtenerDatosDocumentosJson(String estadoId) {
         //https://api.myjson.com/bins/wicz0
@@ -196,8 +201,17 @@ public class DocumentosActivity extends AppCompatActivity {
         EstadoProceso estaProcesoPrimero = new EstadoProceso();
         estaProcesoPrimero.setNombre("POR APROBAR");
         estaProcesoPrimero.setEstadoProcesoId("26");
+        estaProcesoPrimero.setCantidadDocsSegunEstadoProceso("0");
         estadoProcesos.add(estaProcesoPrimero);
         obtenerEstadoProcesoStatusTramiteJson();
+
+        String datos="";
+        for (int i =0;i<estadoProcesos.size();i++){
+            datos +=estadoProcesos.get(i).getEstadoProcesoId() +
+                    " - "+estadoProcesos.get(i).getNombre()+"- "
+                    +estadoProcesos.get(i).getCantidadDocsSegunEstadoProceso();
+        }
+        Log.e("DDDDD", datos);
         mAdapter = new StoreAdapter(this, estadoProcesos);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
@@ -205,6 +219,7 @@ public class DocumentosActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
+        Log.e("estadoProcesos.size X", String.valueOf(estadoProcesos.size()));
         recyclerView.setNestedScrollingEnabled(false);
         
 

@@ -29,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.EstadoProceso;
+import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.example.s3k_user1.appzonas.app.MyApplication;
 import com.google.android.gms.maps.MapView;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
@@ -38,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -54,13 +56,17 @@ public class FragmentoTarjetas extends Fragment {
     private String IP_LEGAL = MapsActivity.IP_APK;
     private static final String TAG = "Fragmento_Tarjetas_Docs";
     public String EstadoID="";
+    SessionManager session;
+    String usuario = "";
 
+    // email
+    String id = "";
     public void obtenerEstadoProcesoStatusTramiteJson() {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
         Log.e(TAG,"entro a obtenerEstadoProcesoStatusTramiteJson");
 
-        String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno";
+        String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno?usuarioId="+id;
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -80,7 +86,7 @@ public class FragmentoTarjetas extends Fragment {
                                 estadoProceso.setDescripcion(jsonObject.getString("Descripcion"));
                                 estadoProceso.setTipo(jsonObject.getString("Tipo"));
                                 estadoProceso.setEstado(jsonObject.getString("Estado"));
-
+                                estadoProceso.setCantidadDocsSegunEstadoProceso(jsonObject.getString("CantidaDocumentoxEstado"));
                                 String estadoID = estadoProceso.getEstadoProcesoId();
                                 //estadoProceso.setCantidadDocsSegunEstadoProceso(obtenerDatosDocumentosJson(estadoID));
                                 estadoProcesos.add(estadoProceso);
@@ -114,7 +120,11 @@ public class FragmentoTarjetas extends Fragment {
 
         View view = inflater.inflate(R.layout.fragmento_tarjetas, container, false);
 
-
+        session = new SessionManager(getActivity().getApplicationContext());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
+        id = user.get(SessionManager.KEY_USUARIO_ID);
 
         recyclerView = view.findViewById(R.id.recycler_view_tarjetas);
         estadoProcesos = new ArrayList<>();

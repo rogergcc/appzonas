@@ -163,7 +163,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     if (respuestaLogin){
                         session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO);
 
-                        Intent intentPantalla = new Intent(SplashScreenActivity.this,DocumentosActivity.class);
+                        Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
                         startActivity(intentPantalla);
                     }else{
                         Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
