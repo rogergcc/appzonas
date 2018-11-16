@@ -43,6 +43,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     public static String USUARIOID="";
     public static String USUARIONOMBRE="";
     public static String USUARIOEMPLEADO="";
+    public static String USUARIOCORREO="";
+    public static String USUARIOROL="";
     RelativeLayout rellay1, rellay2;
     ImageView imagen_logo_splash_screen;
     Button btnIngresarPantallaTokenWeb;
@@ -90,6 +92,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                             USUARIONOMBRE =jsonObject.getString("usuarioNombre");
 
                             USUARIOEMPLEADO =objectUser.getString("NombreEmpleado");
+
+                            USUARIOCORREO =jsonObject.getString("correo");
+
+                            USUARIOROL =jsonObject.getString("rol");
+
                             respuestaLogin = Boolean.valueOf(respuestSesion);
                             mensajeLogin = mensaje;
                         } catch (JSONException e) {
@@ -161,7 +168,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
                     if (respuestaLogin){
-                        session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO);
+                        session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO,USUARIOCORREO,USUARIOROL);
+
 
                         Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
                         startActivity(intentPantalla);
