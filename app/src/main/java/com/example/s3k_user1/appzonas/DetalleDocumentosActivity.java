@@ -67,14 +67,15 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     // email
     String id = "";
+    String perfil = "";
+    private String respuestaRevisizarDocuento = "";
     public void DocumentoPorEspecialistaListarExternoJson() {
         //https://api.myjson.com/bins/wicz0
         //String url = "http://192.168.0.12/documentosLista.json";
         mSwipeRefreshLayout.setRefreshing(true);
         Log.e(TAG,"E USUARIO ID: "+ id);
         Log.w(TAG,"W USUARIO ID: "+ id);
-        Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id
-                , Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
         String url = IP_LEGAL + "/legal/Documento/DocumentoPorEspecialistaListarExternoJson?estadoProcesoId="+EstadoDoc+"&usuarioId="+id;
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
@@ -90,6 +91,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 JSONObject jsonObject = jRoutes.getJSONObject(i);
 
                                 Documento documentoNew = new Documento();
+                                documentoNew.setDocumentoId(jsonObject.getInt("DocumentoId"));
                                 documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
                                 documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
                                 documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
@@ -164,6 +166,51 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         requestQueue.add(JsonObjectRequest);
         //
     }
+
+    public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil) {
+        //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
+        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson?usuarioId="+usuarioId+"&documentoId="+documentoId+ "&esRechazado="+esRechazado + "&observacion="+observacion+ "&perfil="+perfil;
+        Log.w("URL LOGIN: ", url);
+        Log.w("datos parametros: ", usuarioId+" - docid: "+documentoId +" - "+ esRechazado+" - "+observacion+ " - "+perfil );
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                url, (String) null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        Log.e("MENSAJE VALIDA: ", jsonObject.toString());
+                        try {
+                            //JSONObject objectUser = jsonObject.getJSONObject("usuario");
+
+                            String respuesta = jsonObject.getString("mensaje");
+                            //String mensaje = jsonObject.getString("mensaje");
+
+                            respuestaRevisizarDocuento= respuesta;
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.sesion_usuario, menu);
@@ -197,6 +244,9 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         HashMap<String, String> user = session.getUserDetails();
         usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
         id = user.get(SessionManager.KEY_USUARIO_ID);
+
+        perfil = user.get(SessionManager.KEY_USUARIO_ROL);
+
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -247,7 +297,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                     @Override
                                     public void run() {
                                         mSwipeRefreshLayout.setRefreshing(true);
-
+                                        documentoList.clear();
                                         DocumentoPorEspecialistaListarExternoJson();
                                     }
                                 }
@@ -270,6 +320,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     @Override
     public void onRefresh() {
+        documentoList.clear();
         DocumentoPorEspecialistaListarExternoJson();
     }
 
@@ -361,7 +412,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         public void onBindViewHolder(DetalleDocumentosActivity.StoreAdapter.MyViewHolder holder, final int position) {
             final Documento documentoViewHolder = documentoList.get(position);
             holder.name.setText(documentoViewHolder.getNombre());
-
+            final int documentoId = documentoViewHolder.getDocumentoId();
             holder.fecha.setText(documentoViewHolder.getFecha());
             //TODO inicializar Dialog
             myDialog = new Dialog(contextDetalleDocumento);
@@ -392,6 +443,10 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                             Bundle bundle = new Bundle();
 
                             bundle.putString("vNombreDocRechazar", documentoViewHolder.getNombre());
+                            bundle.putInt("vUsuarioId", Integer.parseInt(id));
+                            bundle.putInt("vDocumentoId", documentoViewHolder.getDocumentoId());
+                            bundle.putString("vPerfil", perfil);
+                            bundle.putString("vRechazar", "Si");
                             Intent newDDocumentsActivity = new Intent(v.getContext(), RechazarDocumentoActivity.class);
                             newDDocumentsActivity.putExtras(bundle);
                             v.getContext().startActivity(newDDocumentsActivity);
@@ -425,7 +480,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                             });
                             builder.show();*/
                             myDialog.hide();
-                            Snackbar.make(vista, "Documento Aprobado", Snackbar.LENGTH_LONG)
+                            RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil);
+                            Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                         }
                     });
@@ -448,7 +504,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                 @Override
                 public void onRefresh() {
                     documentoList.clear();
-                    obtenerDatosDocumentosJson();
+                    DocumentoPorEspecialistaListarExternoJson();
                     refresh();
                 }
             });

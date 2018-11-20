@@ -53,7 +53,7 @@
         android:textSize="15dp" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/rechazo_doc_observacion"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:ems="20"

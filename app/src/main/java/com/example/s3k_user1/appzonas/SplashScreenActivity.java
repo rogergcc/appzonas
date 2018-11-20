@@ -76,6 +76,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         Log.e("MENSAJE VALIDA: ", "u:" + usuLogin + " - "+ usuPassword);
         String url = IP_LEGAL+"/legal/Usuario/ValidacionLoginExternoJson?usuLogin="+usuLogin+"&usuPassword="+usuPassword;
+        Log.e("URL LOGIN: ", url);
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -97,7 +98,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                             USUARIOROL =jsonObject.getString("rol");
 
-                            respuestaLogin = Boolean.valueOf(respuestSesion);
+                            respuestaLogin = jsonObject.getBoolean("respuesta");
+                            Log.e("Respuesta Login", String.valueOf(respuestaLogin));
                             mensajeLogin = mensaje;
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -116,9 +118,11 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         });
 
+        /*
         Toast.makeText(SplashScreenActivity.this,
                 "resp_F_validacion: " + respuestaLogin,
                 Toast.LENGTH_SHORT).show();
+                */
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);

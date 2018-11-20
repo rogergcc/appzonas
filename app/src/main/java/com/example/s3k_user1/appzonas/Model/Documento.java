@@ -1,6 +1,8 @@
 package com.example.s3k_user1.appzonas.Model;
 
 public class Documento {
+    private int DocumentoId;
+
     private String Nombre;
 
     private String Descripcion;
@@ -13,12 +15,21 @@ public class Documento {
 
     }
 
-    public Documento(String nombre, String descripcion, String tipoContrato, String fecha, String estado) {
+    public Documento(int documentoId, String nombre, String descripcion, String tipoContrato, String fecha, String estado) {
+        DocumentoId = documentoId;
         Nombre = nombre;
         Descripcion = descripcion;
         TipoContrato = tipoContrato;
         Fecha = fecha;
         Estado = estado;
+    }
+
+    public int getDocumentoId() {
+        return DocumentoId;
+    }
+
+    public void setDocumentoId(int documentoId) {
+        DocumentoId = documentoId;
     }
 
     public String getNombre() {
