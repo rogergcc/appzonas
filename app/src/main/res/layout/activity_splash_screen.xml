@@ -94,7 +94,7 @@
                             android:inputType="text"
                             android:paddingStart="15dp"
 
-                            android:text="ulegal"
+                            android:text="utecnico"
                             android:textColor="#fff" />
 
                     </android.support.design.widget.TextInputLayout>

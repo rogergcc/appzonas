@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,6 +37,7 @@ import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.Documento;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
@@ -68,22 +70,29 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     // email
     String id = "";
     String perfil = "";
+    int cantidadDePetiticiones=0;
     private String respuestaRevisizarDocuento = "";
     public void DocumentoPorEspecialistaListarExternoJson() {
-        //https://api.myjson.com/bins/wicz0
-        //String url = "http://192.168.0.12/documentosLista.json";
+
         mSwipeRefreshLayout.setRefreshing(true);
-        Log.e(TAG,"E USUARIO ID: "+ id);
+
+        cantidadDePetiticiones++;
+
+        Log.e(TAG,"CANTIDA DE PETICIONES: "+ cantidadDePetiticiones);
         Log.w(TAG,"W USUARIO ID: "+ id);
+
+        if ( cantidadDePetiticiones<=1){
         //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
         String url = IP_LEGAL + "/legal/Documento/DocumentoPorEspecialistaListarExternoJson?estadoProcesoId="+EstadoDoc+"&usuarioId="+id;
+
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
 
+
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        Log.w(TAG,response.toString());
                         JSONArray jRoutes = null;
                         try {
                             jRoutes = response.getJSONArray("data");
@@ -103,7 +112,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                             e.printStackTrace();
                         }
                         mSwipeRefreshLayout.setRefreshing(false);
-                    }
+                    };
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -114,10 +123,23 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
             }
-        });
+        }) {
+            @Override
+                public Request.Priority getPriority() {
+                return Request.Priority.HIGH;
+            }
+        };
+
+
         //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
+        JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
+        }
         //
     }
 
@@ -202,7 +224,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
             }
-        });
+        })
+            {@Override
+                public Request.Priority getPriority() {
+                return Priority.NORMAL;
+            };
+        };
 
 
 
@@ -297,7 +324,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                     @Override
                                     public void run() {
                                         mSwipeRefreshLayout.setRefreshing(true);
-                                        documentoList.clear();
+                                        //documentoList.clear();
                                         DocumentoPorEspecialistaListarExternoJson();
                                     }
                                 }
@@ -320,7 +347,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     @Override
     public void onRefresh() {
-        documentoList.clear();
+        //documentoList.clear();
         DocumentoPorEspecialistaListarExternoJson();
     }
 
@@ -418,6 +445,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
             myDialog = new Dialog(contextDetalleDocumento);
             myDialog.setContentView(R.layout.act_det_doc_dialog_doc);
 
+
             holder.detalle_documentoCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -499,11 +527,11 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     .into(holder.thumbnail);
             *
             * */
-
+            //TODO COMENTANDO  SWIPE
             mSwipeRefreshLayoutStore.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    documentoList.clear();
+                    //documentoList.clear();
                     DocumentoPorEspecialistaListarExternoJson();
                     refresh();
                 }

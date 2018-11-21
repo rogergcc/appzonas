@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -78,7 +79,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         String url = IP_LEGAL+"/legal/Usuario/ValidacionLoginExternoJson?usuLogin="+usuLogin+"&usuPassword="+usuPassword;
         Log.e("URL LOGIN: ", url);
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                url, (String) null,
+                url,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -116,7 +117,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                     DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
             }
-        });
+        }) {
+            @Override
+            public Priority getPriority() {
+                return Priority.IMMEDIATE;
+            }
+        };
 
         /*
         Toast.makeText(SplashScreenActivity.this,
@@ -124,7 +130,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT).show();
                 */
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(SplashScreenActivity.this);
+        JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(JsonObjectRequest);
 
     }
@@ -176,6 +187,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
                         Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
+                        intentPantalla.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intentPantalla);
                     }else{
                         Snackbar.make(vista, mensajeLogin, Snackbar.LENGTH_LONG)
