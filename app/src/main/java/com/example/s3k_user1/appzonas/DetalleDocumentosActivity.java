@@ -1,6 +1,7 @@
 package com.example.s3k_user1.appzonas;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -41,6 +42,8 @@ import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.Documento;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
+import com.example.s3k_user1.appzonas.app.AppSingleton;
+import com.example.s3k_user1.appzonas.app.MyApplication;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
@@ -72,8 +75,17 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     String perfil = "";
     int cantidadDePetiticiones=0;
     private String respuestaRevisizarDocuento = "";
-    public void DocumentoPorEspecialistaListarExternoJson() {
 
+    ProgressDialog progressDialog;
+
+    public void DocumentoPorEspecialistaListarExternoJson() {
+        String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
+
+
+
+        //progressDialog.setCancelable(false);
+        //progressDialog.setIndeterminate(true);
+        //progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mSwipeRefreshLayout.setRefreshing(true);
 
         cantidadDePetiticiones++;
@@ -93,6 +105,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.w(TAG,response.toString());
+                        progressDialog.dismiss();
                         JSONArray jRoutes = null;
                         try {
                             jRoutes = response.getJSONArray("data");
@@ -112,11 +125,15 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                             e.printStackTrace();
                         }
                         mSwipeRefreshLayout.setRefreshing(false);
-                    };
+                        //progressDialog.hide();
+
+                    }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Error: " + error.getMessage());
+                //progressDialog.hide();
+                progressDialog.dismiss();
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
@@ -126,21 +143,24 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         }) {
             @Override
                 public Request.Priority getPriority() {
-                return Request.Priority.HIGH;
+                return Priority.HIGH;
             }
         };
 
 
         //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
-        JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+        /*JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 0,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(JsonObjectRequest);
+        //RequestQueue requestQueue = Volley.newRequestQueue(DetalleDocumentosActivity.this);
+            // requestQueue.add(JsonObjectRequest);
+            // MyApplication.getInstance().addToRequestQueue(JsonObjectRequest);
+
+            AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(JsonObjectRequest,REQUEST_TAG);
         }
-        //
+
     }
 
     public void obtenerDatosDocumentosJson() {
@@ -266,6 +286,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_documentos);
 
+
+
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
@@ -311,6 +333,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 //        }else{
 //            obtenerDatosDocumentosJson();
 //        }
+        progressDialog = new ProgressDialog(DetalleDocumentosActivity.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         DocumentoPorEspecialistaListarExternoJson();
         mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
 
@@ -319,8 +347,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.post(new Runnable() {
+        //mSwipeRefreshLayout.setOnRefreshListener(this);
+        /*mSwipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         mSwipeRefreshLayout.setRefreshing(true);
@@ -328,7 +356,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                         DocumentoPorEspecialistaListarExternoJson();
                                     }
                                 }
-        );
+        );*/
         recyclerView.setNestedScrollingEnabled(false);
 
 
@@ -349,6 +377,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     public void onRefresh() {
         //documentoList.clear();
         DocumentoPorEspecialistaListarExternoJson();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -541,7 +570,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    StoreAdapter.this.notifyDataSetChanged();
+                     StoreAdapter.this.notifyDataSetChanged();
                     mSwipeRefreshLayoutStore.setRefreshing(false);
                 }
             },4000);
