@@ -3,20 +3,16 @@ package com.example.s3k_user1.appzonas;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
-import android.support.design.button.MaterialButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -33,14 +29,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.s3k_user1.appzonas.Others.UploadImageActivity;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
-import com.example.s3k_user1.appzonas.app.AppSingleton;
-import com.example.s3k_user1.appzonas.app.MyApplication;
 import com.example.s3k_user1.appzonas.app.VolleySingleton;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,7 +57,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     boolean respuestaLogin = false;
     String mensajeLogin = "";
     View vista;
-    private String IP_LEGAL = MapsActivity.IP_APK;
+    private String IP_LEGAL = WebTokenActivity.IP_APK;
 
     ProgressBar progressBar;
 
@@ -233,7 +225,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                            DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }) {
             @Override
@@ -281,7 +277,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-                Intent intent1 = new Intent(SplashScreenActivity.this,MapsActivity.class);
+                Intent intent1 = new Intent(SplashScreenActivity.this,WebTokenActivity.class);
                 startActivity(intent1);
             }
         });
@@ -297,7 +293,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         });
         /*new Handler().postDelayed(new Runnable(){
             public void run(){
-                Intent intent = new Intent(SplashScreenActivity.this, MapsActivity.class);
+                Intent intent = new Intent(SplashScreenActivity.this, WebTokenActivity.class);
                 startActivity(intent);
                 finish();
             };

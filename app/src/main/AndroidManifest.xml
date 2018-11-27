@@ -48,7 +48,7 @@
 
         <activity android:name=".Others.UploadImageActivity"></activity>
         <activity
-            android:name=".MapsActivity"
+            android:name=".WebTokenActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ActividadPrincipal"
@@ -82,16 +82,16 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.s3k_user1.appzonas.MapsActivity" />
+                android:value="com.example.s3k_user1.appzonas.WebTokenActivity" />
         </activity>
         <activity
             android:name=".DocumentosActivity"
             android:label="@string/title_activity_documentos"
-            android:parentActivityName=".MapsActivity"
+            android:parentActivityName=".WebTokenActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.s3k_user1.appzonas.MapsActivity" />
+                android:value="com.example.s3k_user1.appzonas.WebTokenActivity" />
         </activity>
         <activity
             android:name=".DetalleDocumentosActivity"

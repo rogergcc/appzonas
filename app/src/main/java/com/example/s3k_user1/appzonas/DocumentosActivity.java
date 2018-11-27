@@ -1,6 +1,5 @@
 package com.example.s3k_user1.appzonas;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -20,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +40,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,7 +48,7 @@ public class DocumentosActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<EstadoProceso> estadoProcesos;
     private StoreAdapter mAdapter;
-    private String IP_LEGAL = MapsActivity.IP_APK;
+    private String IP_LEGAL = WebTokenActivity.IP_APK;
     private static final String TAG = DocumentosActivity.class.getSimpleName();
     public String EstadoID="";
     SessionManager session;

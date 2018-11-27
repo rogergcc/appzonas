@@ -1,7 +1,6 @@
 package com.example.s3k_user1.appzonas;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +25,7 @@ import org.json.JSONObject;
 
 public class RechazarDocumentoActivity extends AppCompatActivity {
     TextView rechazo_doc_texto, rechazo_doc_observacion;
-    private String IP_LEGAL = MapsActivity.IP_APK;
+    private String IP_LEGAL = WebTokenActivity.IP_APK;
     Button btnRechazar;
     private String respuestaRevisizarDocuento = "";
     View vista;

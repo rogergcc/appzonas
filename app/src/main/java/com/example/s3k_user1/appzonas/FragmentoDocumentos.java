@@ -30,8 +30,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.EstadoProceso;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
-import com.example.s3k_user1.appzonas.app.MyApplication;
-import com.google.android.gms.maps.MapView;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
@@ -45,15 +43,15 @@ import java.util.List;
 /**
  * Fragmento para la pestaña "TARJETAS" de la sección "Mi Cuenta"
  */
-public class FragmentoTarjetas extends Fragment {
+public class FragmentoDocumentos extends Fragment {
 
-    public FragmentoTarjetas() {
+    public FragmentoDocumentos() {
 
     }
     private RecyclerView recyclerView;
     private List<EstadoProceso> estadoProcesos;
     private StoreAdapter mAdapter;
-    private String IP_LEGAL = MapsActivity.IP_APK;
+    private String IP_LEGAL = WebTokenActivity.IP_APK;
     private static final String TAG = "Fragmento_Tarjetas_Docs";
     public String EstadoID="";
     SessionManager session;

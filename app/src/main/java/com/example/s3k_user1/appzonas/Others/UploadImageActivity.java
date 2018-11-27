@@ -21,9 +21,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.s3k_user1.appzonas.MapsActivity;
+import com.example.s3k_user1.appzonas.WebTokenActivity;
 import com.example.s3k_user1.appzonas.R;
 
 import org.json.JSONException;
@@ -41,7 +40,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     ImageView imgView;
      final int IMG_REQUEST =1;
      Bitmap bitmap;
-    private String IP_LEGAL = MapsActivity.IP_APK;
+    private String IP_LEGAL = WebTokenActivity.IP_APK;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

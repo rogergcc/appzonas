@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.example.s3k_user1.appzonas.fragment.StoreFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -36,7 +35,7 @@ public class MiFirebaseMessagingService extends FirebaseMessagingService {
             Log.w(TAG, "Notificacion Body: " + remoteMessage.getNotification().getBody());
             Log.w(TAG, "Notificacion Title: " + remoteMessage.getNotification().getTitle());
             titulo = remoteMessage.getNotification().getTitle();
-            //MapsActivity.
+            //WebTokenActivity.
             ntTitle = remoteMessage.getNotification().getTitle();
             ntBody = remoteMessage.getNotification().getBody();
 
@@ -52,7 +51,7 @@ public class MiFirebaseMessagingService extends FirebaseMessagingService {
 
     private void mostrarNotificacion(String title, String body,String codigo, String nombre) {
 
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(this, WebTokenActivity.class);
 
         Intent intents = new Intent("com.example.s3k_user1.appzonas_FCM");
 

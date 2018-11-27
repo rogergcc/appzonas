@@ -339,13 +339,13 @@ public class StoreFragment extends Fragment implements
 
                             String respuestaActualizar = (response.getString("respuesta"));
                             if ( respuestaActualizar.equals("true")) {
-                                //Toast.makeText(MapsActivity.this, "Token Registrado Correctamente", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(WebTokenActivity.this, "Token Registrado Correctamente", Toast.LENGTH_SHORT).show();
                                 DynamicToast.makeSuccess(getActivity(), "Token Registrado Correctamente", Toast.LENGTH_LONG).show();
 
 
                             }
                             else
-                                //Toast.makeText(MapsActivity.this, "Token No Registrado, IMEI no registrado en el Sistema\"", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(WebTokenActivity.this, "Token No Registrado, IMEI no registrado en el Sistema\"", Toast.LENGTH_SHORT).show();
                                 DynamicToast.makeError(getActivity(), "Token No Registrado, Verifique IMEI \n este registrado en el Sistema", Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
                             e.printStackTrace();

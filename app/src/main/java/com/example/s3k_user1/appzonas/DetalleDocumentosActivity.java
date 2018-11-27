@@ -30,20 +30,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.Documento;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.example.s3k_user1.appzonas.app.AppSingleton;
-import com.example.s3k_user1.appzonas.app.MyApplication;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONArray;
@@ -62,7 +60,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     private List<Documento> documentoList;
     private DetalleDocumentosActivity.StoreAdapter mAdapter;
     private View vista;
-    private String IP_LEGAL = MapsActivity.IP_APK;
+    private String IP_LEGAL = WebTokenActivity.IP_APK;
     private static final String TAG = DetalleDocumentosActivity.class.getSimpleName();
     SwipeRefreshLayout mSwipeRefreshLayout;
         //https://prmadi.com/handling_volley_request_when_network_connection_is_slow/
@@ -120,6 +118,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
 
                                 documentoList.add(documentoNew);
+                                Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -334,12 +333,13 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 //            obtenerDatosDocumentosJson();
 //        }
         progressDialog = new ProgressDialog(DetalleDocumentosActivity.this);
-        progressDialog.setMessage("Loading...");
+        progressDialog.setMessage("Espere...");
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
         progressDialog.show();
 
         DocumentoPorEspecialistaListarExternoJson();
+
         mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);

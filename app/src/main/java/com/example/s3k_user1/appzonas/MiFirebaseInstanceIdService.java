@@ -34,7 +34,7 @@ public class MiFirebaseInstanceIdService extends FirebaseInstanceIdService {
 
         Log.w(TAG, "Token Nuevo ID Service: " + token);
         //tokenD = token;
-        //MapsActivity.TOKEN=token;
+        //WebTokenActivity.TOKEN=token;
         //enviarTokenAlServidor(token);
     }
     public void ObtenerIMEI() {

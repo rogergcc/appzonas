@@ -82,7 +82,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * type Maps activity.
  */
-public class MapsActivity extends AppCompatActivity implements
+public class WebTokenActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int FINE_LOCATION_PERMISSION_REQUEST = 1;
@@ -112,7 +112,7 @@ public class MapsActivity extends AppCompatActivity implements
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    public static String IP_APK =  "http://192.168.1.33";
+    public static String IP_APK =  "http://192.168.1.34";
     /**
      * Acceso habilitado.
      */
@@ -152,7 +152,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        myDialogIP = new Dialog(MapsActivity.this);
+        myDialogIP = new Dialog(WebTokenActivity.this);
         myDialogIP.setContentView(R.layout.dialog_cambiar_ip);
         String msg ="";Fragment fragment;
         switch (item.getItemId()) {
@@ -168,14 +168,14 @@ public class MapsActivity extends AppCompatActivity implements
                 final EditText dialog_edt_ip = myDialogIP.findViewById(R.id.dialog_edt_ip);
                 botonAprobarIP = myDialogIP.findViewById(R.id.btnAprobarIP);
                 //botonCancelar = myDialog.findViewById(R.id.btnCancelar);
-                dialog_edt_ip.setText(MapsActivity.IP_APK);
+                dialog_edt_ip.setText(WebTokenActivity.IP_APK);
                 myDialogIP.show();
                 botonAprobarIP.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        MapsActivity.IP_APK = dialog_edt_ip.getText().toString();
-                        dialog_edt_ip.setText(MapsActivity.IP_APK);
+                        WebTokenActivity.IP_APK = dialog_edt_ip.getText().toString();
+                        dialog_edt_ip.setText(WebTokenActivity.IP_APK);
                         myDialogIP.hide();
 
                     }
@@ -655,13 +655,13 @@ public class MapsActivity extends AppCompatActivity implements
                             TextView text = (TextView) layout.findViewById(R.id.text);
                             String respuestaActualizar = (response.getString("respuesta"));
                             if ( respuestaActualizar.equals("true")) {
-                                //Toast.makeText(MapsActivity.this, "Token Registrado Correctamente", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(WebTokenActivity.this, "Token Registrado Correctamente", Toast.LENGTH_SHORT).show();
                                 DynamicToast.makeSuccess(getBaseContext(), "Token Registrado Correctamente", Toast.LENGTH_LONG).show();
 
 
                             }
                             else
-                                //Toast.makeText(MapsActivity.this, "Token No Registrado, IMEI no registrado en el Sistema\"", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(WebTokenActivity.this, "Token No Registrado, IMEI no registrado en el Sistema\"", Toast.LENGTH_SHORT).show();
                                 DynamicToast.makeError(getBaseContext(), "Token No Registrado, Verifique IMEI \n este registrado en el Sistema", Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -879,7 +879,7 @@ public class MapsActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 String ime = obtenerIMEI();
-                //Toast.makeText(MapsActivity.this, "IMEI: "+ime, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(WebTokenActivity.this, "IMEI: "+ime, Toast.LENGTH_SHORT).show();
                 //Log.w(TAG,"imei: " + ime + " codigoUser: " + codigoUsuario);
                 obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
 
