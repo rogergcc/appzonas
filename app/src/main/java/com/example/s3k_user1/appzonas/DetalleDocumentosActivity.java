@@ -40,6 +40,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.Documento;
+import com.example.s3k_user1.appzonas.Others.UploadImageActivity;
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
 import com.example.s3k_user1.appzonas.app.AppSingleton;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
@@ -79,8 +80,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     public void DocumentoPorEspecialistaListarExternoJson() {
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
 
-
-
+        String servicio = "";
+        if (perfil.equals("1003") || perfil.equals("1004")) {
+            servicio="DocumentoPorResponsableRevisionListarExternoJson";
+        } else {
+            servicio="DocumentoPorEspecialistaListarExternoJson";
+        }
         //progressDialog.setCancelable(false);
         //progressDialog.setIndeterminate(true);
         //progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -93,7 +98,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
         if ( cantidadDePetiticiones<=1){
         //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
-        String url = IP_LEGAL + "/legal/Documento/DocumentoPorEspecialistaListarExternoJson?estadoProcesoId="+EstadoDoc+"&usuarioId="+id;
+        String url = IP_LEGAL + "/legal/Documento/"+servicio+"?estadoProcesoId="+EstadoDoc+"&usuarioId="+id;
 
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
@@ -208,9 +213,9 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         //
     }
 
-    public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil) {
+    public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil, String imagen, String nombre) {
         //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
-        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson?usuarioId="+usuarioId+"&documentoId="+documentoId+ "&esRechazado="+esRechazado + "&observacion="+observacion+ "&perfil="+perfil;
+        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson?usuarioId="+usuarioId+"&documentoId="+documentoId+ "&esRechazado="+esRechazado + "&observacion="+observacion+ "&perfil="+perfil + "&imagen"+imagen+ "&nombre"+nombre;
         Log.w("URL LOGIN: ", url);
         Log.w("datos parametros: ", usuarioId+" - docid: "+documentoId +" - "+ esRechazado+" - "+observacion+ " - "+perfil );
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
@@ -512,8 +517,27 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     botonAprobar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            myDialog.hide();
 
+                            if (perfil.equals("1003") || perfil.equals("1004")) {
+                                Bundle bundle = new Bundle();
 
+                                bundle.putInt("vusuarioId", Integer.parseInt(id));
+                                bundle.putInt("vdocumentoId", documentoId);
+                                bundle.putString("vesRechazado", "No");
+                                bundle.putString("vobservacion", "");
+                                bundle.putString("vperfil", perfil);
+
+                                bundle.putString("vnombre", documentoViewHolder.getNombre());
+                                Intent newDDocumentsActivity = new Intent(v.getContext(), UploadImageActivity.class);
+                                newDDocumentsActivity.putExtras(bundle);
+                                v.getContext().startActivity(newDDocumentsActivity);
+                                //startActivity(new Intent(v.getContext(), UploadImageActivity.class));
+                            } else {
+                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","");
+                                Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
                             /*AlertDialog.Builder builder = new AlertDialog.Builder(contextDetalleDocumento);
                             builder.setTitle("Confirmar");
                             builder.setMessage("Seguro que desea aprobar documento");
@@ -536,10 +560,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 }
                             });
                             builder.show();*/
-                            myDialog.hide();
-                            RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil);
-                            Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
+
                         }
                     });
                 }

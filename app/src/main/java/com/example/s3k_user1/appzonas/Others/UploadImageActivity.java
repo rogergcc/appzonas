@@ -16,14 +16,17 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.WebTokenActivity;
 import com.example.s3k_user1.appzonas.R;
+import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +44,9 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
      final int IMG_REQUEST =1;
      Bitmap bitmap;
     private String IP_LEGAL = WebTokenActivity.IP_APK;
+
+    private String respuestaRevisizarDocuento = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +74,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                 selectImage();
                 break;
             case R.id.btnSubirImagen:
-                uploadImage();
+                RevizarDocumentoJson();
                 break;
         }
     }
@@ -81,6 +87,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
             JSONObject params = new JSONObject();
             js.put("nombre",edtNombreImagen.getText().toString().trim());
             js.put("imagen",imageToString(bitmap));
+            //js.put("documentoId","A");
 
 
         }catch (JSONException e) {
@@ -123,9 +130,81 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonObjReq);
     }
+    public void RevizarDocumentoJson() {
+        //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
+        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson";
+        final int usuarioId = getIntent().getExtras().getInt("vusuarioId");
+        final int documentoId = getIntent().getExtras().getInt("vdocumentoId");
+        final String esRechazado = getIntent().getExtras().getString("vesRechazado");
+        final String observacion = getIntent().getExtras().getString("vobservacion");
+        final String perfil = getIntent().getExtras().getString("vperfil");
+        final String nombre = getIntent().getExtras().getString("vnombre");
+        JSONObject js = new JSONObject();
+        try {
+            JSONObject params = new JSONObject();
+            js.put("nombre",edtNombreImagen.getText().toString().trim());
+            js.put("imagen",imageToString(bitmap));
+            js.put("usuarioId",usuarioId);
+            js.put("documentoId",documentoId);
+            js.put("esRechazado",esRechazado);
+            js.put("observacion",observacion);
+            js.put("perfil",perfil);
+            js.put("imagen",imageToString(bitmap));
+            js.put("nombre",nombre);
+
+
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,url, js,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        Log.e("MENSAJE VALIDA: ", jsonObject.toString());
+                        String mensaje="";
+                        try {
+                            //JSONObject objectUser = jsonObject.getJSONObject("usuario");
+
+                            String respuesta = jsonObject.getString("mensaje");
+                             mensaje = jsonObject.getString("mensaje");
+
+                            respuestaRevisizarDocuento= respuesta;
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(UploadImageActivity.this,mensaje , Toast.LENGTH_SHORT).show();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                }
+            }
+        })
+        {@Override
+        public Request.Priority getPriority() {
+            return Priority.NORMAL;
+        };
+        };
+
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(JsonObjectRequest);
+
+    }
+
     private String imageToString(Bitmap bitmap){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,50,byteArrayOutputStream);
         byte[] imgBytes = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(imgBytes,Base64.DEFAULT);
     }
