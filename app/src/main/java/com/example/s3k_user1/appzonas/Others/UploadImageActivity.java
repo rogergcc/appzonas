@@ -1,5 +1,6 @@
 package com.example.s3k_user1.appzonas.Others;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -46,7 +47,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     private String IP_LEGAL = WebTokenActivity.IP_APK;
 
     private String respuestaRevisizarDocuento = "";
-
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,8 +143,8 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         JSONObject js = new JSONObject();
         try {
             JSONObject params = new JSONObject();
-            js.put("nombre",edtNombreImagen.getText().toString().trim());
-            js.put("imagen",imageToString(bitmap));
+
+
             js.put("usuarioId",usuarioId);
             js.put("documentoId",documentoId);
             js.put("esRechazado",esRechazado);

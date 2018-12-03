@@ -65,6 +65,7 @@ public class FragmentoDocumentos extends Fragment {
         Log.e(TAG,"entro a obtenerEstadoProcesoStatusTramiteJson");
 
         String url = IP_LEGAL + "/legal/EstadoProceso/EstadoProcesoListarJsonExterno?usuarioId="+id;
+        Log.e(TAG,url);
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -73,6 +74,7 @@ public class FragmentoDocumentos extends Fragment {
                     public void onResponse(JSONObject response) {
 
                         JSONArray jRoutes = null;
+                        Log.e(TAG,response.toString());
                         try {
                             jRoutes = response.getJSONArray("estadosprocesos");
                             for (int i = 0; i < jRoutes.length(); i++) {

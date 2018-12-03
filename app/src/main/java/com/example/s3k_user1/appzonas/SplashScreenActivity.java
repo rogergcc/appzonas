@@ -1,5 +1,6 @@
 package com.example.s3k_user1.appzonas;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
@@ -60,6 +61,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     private String IP_LEGAL = WebTokenActivity.IP_APK;
 
     ProgressBar progressBar;
+
+    ProgressDialog progressDialog;
 
     SessionManager session;
     Runnable runnable = new Runnable() {
@@ -169,7 +172,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         progressBar.setVisibility(View.GONE);
-
+                        progressDialog.dismiss();
                         try {
                             //converting response to json object
                             JSONObject jsonObject = new JSONObject(response);
@@ -225,7 +228,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        progressDialog.dismiss();
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
                             DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
@@ -286,6 +289,13 @@ public class SplashScreenActivity extends AppCompatActivity {
         btnIngresarLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                progressDialog = new ProgressDialog(SplashScreenActivity.this);
+                progressDialog.setMessage("Espere...");
+                progressDialog.setIndeterminate(false);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
                 ValidacionLogin();
                 //Intent intentPantalla = new Intent(SplashScreenActivity.this,ActividadPrincipal.class);
                 //startActivity(intentPantalla);

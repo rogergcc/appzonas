@@ -39,24 +39,32 @@
 
     <Button
         android:id="@+id/btnElegirImagen"
-        android:layout_width="wrap_content"
-        android:layout_height="49dp"
+
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="44dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+
+        android:backgroundTint="@color/colorAppLegal"
+        android:drawableStart="@mipmap/ic_elegir_imagen"
         android:text="Elegir Imagen"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/btnSubirImagen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnSubirImagen"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="44dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:backgroundTint="@color/colorAppLegal"
+        android:drawableLeft="@mipmap/upload"
         android:text="subir imagen"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

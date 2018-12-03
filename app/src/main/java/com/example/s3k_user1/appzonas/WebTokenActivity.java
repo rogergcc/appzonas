@@ -112,7 +112,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    public static String IP_APK =  "http://192.168.1.34";
+    public static String IP_APK =  "http://192.168.1.50";
     /**
      * Acceso habilitado.
      */

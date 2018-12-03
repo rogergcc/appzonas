@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -76,7 +77,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     private String respuestaRevisizarDocuento = "";
 
     ProgressDialog progressDialog;
-
+    FloatingActionButton floatingActionButton;
     public void DocumentoPorEspecialistaListarExternoJson() {
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
 
@@ -108,7 +109,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.w(TAG,response.toString());
-                        progressDialog.dismiss();
+                        hidepDialog();
                         JSONArray jRoutes = null;
                         try {
                             jRoutes = response.getJSONArray("data");
@@ -137,7 +138,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Error: " + error.getMessage());
                 //progressDialog.hide();
-                progressDialog.dismiss();
+                hidepDialog();
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
@@ -217,7 +218,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
         String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson?usuarioId="+usuarioId+"&documentoId="+documentoId+ "&esRechazado="+esRechazado + "&observacion="+observacion+ "&perfil="+perfil + "&imagen"+imagen+ "&nombre"+nombre;
         Log.w("URL LOGIN: ", url);
-        Log.w("datos parametros: ", usuarioId+" - docid: "+documentoId +" - "+ esRechazado+" - "+observacion+ " - "+perfil );
+        Log.w("datos parametros: ", usuarioId+" - docid:"+documentoId +" - esRechazado:"+ esRechazado+" -Observacion:"+observacion+ " -perfil:"+perfil );
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -341,12 +342,28 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         progressDialog.setMessage("Espere...");
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
-        progressDialog.show();
+
+        showpDialog();
 
         DocumentoPorEspecialistaListarExternoJson();
+        floatingActionButton = findViewById(R.id.fab_act__detalle);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                poblarRecyclerView();
+            }
+        });
 
+        poblarRecyclerView();
+
+
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+    }
+    private void poblarRecyclerView(){
         mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
-
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
@@ -363,15 +380,16 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 }
         );*/
         recyclerView.setNestedScrollingEnabled(false);
+    }
+    protected void showpDialog() {
 
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
-
+        if (!progressDialog.isShowing()) progressDialog.show();
     }
 
+    protected void hidepDialog() {
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
+    }
     public void shuffle(){
         //Collections.shuffle(documentoList, new Random(System.currentTimeMillis()));
         //StoreAdapter adapter = new StoreAdapter(DetalleDocumentosActivity.this, documentoList);
