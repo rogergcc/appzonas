@@ -90,7 +90,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         //progressDialog.setCancelable(false);
         //progressDialog.setIndeterminate(true);
         //progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mSwipeRefreshLayout.setRefreshing(true);
+
+        // Descomentar mSwipeRefreshLayout.setRefreshing(true);
 
         cantidadDePetiticiones++;
 
@@ -113,6 +114,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                         JSONArray jRoutes = null;
                         try {
                             jRoutes = response.getJSONArray("data");
+                            documentoList.clear();
                             for (int i = 0; i < jRoutes.length(); i++) {
                                 JSONObject jsonObject = jRoutes.getJSONObject(i);
 
@@ -124,7 +126,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
 
                                 documentoList.add(documentoNew);
-                                Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
+                                //Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
+                                mAdapter.notifyDataSetChanged();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -353,7 +356,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                 poblarRecyclerView();
             }
         });
-
+        mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        //recyclerView.setAdapter(mAdapter);
         poblarRecyclerView();
 
 
@@ -363,11 +371,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     }
     private void poblarRecyclerView(){
-        mAdapter = new StoreAdapter(this, documentoList,mSwipeRefreshLayout);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(6), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        DocumentoPorEspecialistaListarExternoJson();
+
         recyclerView.setAdapter(mAdapter);
         //mSwipeRefreshLayout.setOnRefreshListener(this);
         /*mSwipeRefreshLayout.post(new Runnable() {
@@ -398,9 +403,10 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     @Override
     public void onRefresh() {
-        //documentoList.clear();
-        DocumentoPorEspecialistaListarExternoJson();
-        mSwipeRefreshLayout.setRefreshing(false);
+        //M documentoList.clear();
+
+        //Descomentar DocumentoPorEspecialistaListarExternoJson();
+        //Descomentar mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -552,9 +558,22 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 v.getContext().startActivity(newDDocumentsActivity);
                                 //startActivity(new Intent(v.getContext(), UploadImageActivity.class));
                             } else {
-                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","");
-                                Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+//                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","");
+//                                Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
+//                                        .setAction("Action", null).show();
+                                Bundle bundle = new Bundle();
+
+                                bundle.putInt("vusuarioId", Integer.parseInt(id));
+                                bundle.putInt("vdocumentoId", documentoId);
+                                bundle.putString("vesRechazado", "No");
+                                bundle.putString("vobservacion", "");
+                                bundle.putString("vperfil", perfil);
+
+                                bundle.putString("vnombre", documentoViewHolder.getNombre());
+                                Intent newDDocumentsActivity = new Intent(v.getContext(), UploadImageActivity.class);
+                                newDDocumentsActivity.putExtras(bundle);
+                                v.getContext().startActivity(newDDocumentsActivity);
+
                             }
                             /*AlertDialog.Builder builder = new AlertDialog.Builder(contextDetalleDocumento);
                             builder.setTitle("Confirmar");
