@@ -52,7 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UploadImageActivity extends AppCompatActivity implements View.OnClickListener, OnPageChangeListener, OnLoadCompleteListener,
+public class UploadFilePdfActivity extends AppCompatActivity implements View.OnClickListener, OnPageChangeListener, OnLoadCompleteListener,
         OnPageErrorListener {
 
     Button btnElegirImagen,btnSubirImagen;
@@ -149,13 +149,16 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                 selectImage();
                 break;
             case R.id.btnSubirImagen:
-//                RevizarDocumentoPDFJson();
-
+//                try {
+//                    RevizarDocumentoPDFJson();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
                 RevizarDocumentoJson(); //Web service revizar Correcto
                 break;
         }
     }
-    private void RevizarDocumentoPDFJson(){
+    private void RevizarDocumentoPDFJson() throws IOException {
         //Direccion.replaceAll(" ", "");
         String url = IP_LEGAL + "/legal/RevisionDocumento/RevizarDocumentoPDFJson";
         //
@@ -186,7 +189,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Toast.makeText(UploadImageActivity.this,mensaje , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadFilePdfActivity.this,mensaje , Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener()
@@ -210,7 +213,58 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonObjReq);
     }
+    private void uploadImage(){
+        //Direccion.replaceAll(" ", "");
+        String url = IP_LEGAL + "/legal/Documento/DocumentoGuardarImagenDocumentoAprobadoJson";
+        //
+        JSONObject js = new JSONObject();
+        try {
+            JSONObject params = new JSONObject();
+            js.put("nombre",edtNombreImagen.getText().toString().trim());
+            js.put("imagen",imageToString(bitmap));
+            //js.put("documentoId","A");
 
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.POST,url, js,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.w("TAG PUES", response.toString());
+                        String mensaje="";
+                        try {
+                            mensaje = response.getString("mensaje");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(UploadFilePdfActivity.this,mensaje , Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.e("Error.Response.Volley", error.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                //params.put("Content-Type","application/x-www-form-urlencoded");
+                //params.put("nombre",edtNombreImagen);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonObjReq);
+    }
     public void RevizarDocumentoJson() {
         //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
         String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson";
@@ -251,14 +305,14 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                             //JSONObject objectUser = jsonObject.getJSONObject("usuario");
 
                             String respuesta = jsonObject.getString("mensaje");
-                             mensaje = jsonObject.getString("mensaje");
+                            mensaje = jsonObject.getString("mensaje");
 
                             respuestaRevisizarDocuento= respuesta;
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Toast.makeText(UploadImageActivity.this,mensaje , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadFilePdfActivity.this,mensaje , Toast.LENGTH_SHORT).show();
 
                     }
                 }, new Response.ErrorListener() {
@@ -290,22 +344,22 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 
         byte[] imgBytes = byteArrayOutputStream.toByteArray();
         //Log.e("Datos imgBytes:", imgBytes.toString());
+        for (byte dato :
+                imgBytes) {
 
-
+        }
+        for (int i = 0 ; i< imgBytes.length;i++){
+            Log.e("imgBytes:", "["+i+"]"+imgBytes[i]);
+        }
         return Base64.encodeToString(imgBytes,Base64.DEFAULT);
     }
-    private String fileToString(File file) {
+    private String fileToString(File file) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         //bitmap.compress(Bitmap.CompressFormat.JPEG,50,byteArrayOutputStream);
 
         //byte[] imgBytes = byteArrayOutputStream.toByteArray();
 
-        byte[] fileBytes = new byte[0];
-        try {
-            fileBytes = IOUtils.toByteArray(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        byte[] fileBytes = IOUtils.toByteArray(file);
 
         return Base64.encodeToString(fileBytes,Base64.DEFAULT);
     }
@@ -324,29 +378,24 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode==IMG_REQUEST &&
-               resultCode==RESULT_OK && data!=null ){
+                resultCode==RESULT_OK && data!=null ){
 
 //            Uri uri = data.getData();
-//            try {
-//                String uriString = uri.toString();
-//                File myFile = new File(getPDFPath(uri));
-//                String path = myFile.getAbsolutePath();
-//                String displayName = null;
-//                Log.e("URI PDF: ",getPDFPath(uri));
-//                //Log.e("uriString: ",data.toString());
+//
+//            String uriString = uri.toString();
+//            File myFile = new File(getPDFPath(uri));
+//            String path = myFile.getAbsolutePath();
+//            String displayName = null;
+//            Log.e("URI PDF: ",getPDFPath(uri));
+//            //Log.e("uriString: ",data.toString());
 //
 //
-//                displayName = myFile.getName();
-//                Log.e("displayName: ",displayName);
-//                Log.e("path: ",path);
-//                //displayFromFile(myFile);
+//            displayName = myFile.getName();
+//            Log.e("displayName: ",displayName);
+//            Log.e("path: ",path);
+//            //displayFromFile(myFile);
 //
-//                myFileGlobal = new File(getPDFPath(uri));
-//            }catch (Exception e) {
-//                Log.e("EXXcep", e.getMessage());
-//                e.printStackTrace();
-//            }
-
+//            myFileGlobal = new File(getPDFPath(uri));
 
 
 
@@ -360,7 +409,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                 imgView.setVisibility(View.VISIBLE);
                 edtNombreImagen.setVisibility(View.VISIBLE);
 
-                    //IOUtils.toByteArray(myFile);
+                //IOUtils.toByteArray(myFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }

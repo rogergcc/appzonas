@@ -558,21 +558,22 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 v.getContext().startActivity(newDDocumentsActivity);
                                 //startActivity(new Intent(v.getContext(), UploadImageActivity.class));
                             } else {
-//                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","");
-//                                Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
-//                                        .setAction("Action", null).show();
-                                Bundle bundle = new Bundle();
+                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","");
+                                Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
 
-                                bundle.putInt("vusuarioId", Integer.parseInt(id));
-                                bundle.putInt("vdocumentoId", documentoId);
-                                bundle.putString("vesRechazado", "No");
-                                bundle.putString("vobservacion", "");
-                                bundle.putString("vperfil", perfil);
-
-                                bundle.putString("vnombre", documentoViewHolder.getNombre());
-                                Intent newDDocumentsActivity = new Intent(v.getContext(), UploadImageActivity.class);
-                                newDDocumentsActivity.putExtras(bundle);
-                                v.getContext().startActivity(newDDocumentsActivity);
+//                                Bundle bundle = new Bundle();
+//
+//                                bundle.putInt("vusuarioId", Integer.parseInt(id));
+//                                bundle.putInt("vdocumentoId", documentoId);
+//                                bundle.putString("vesRechazado", "No");
+//                                bundle.putString("vobservacion", "");
+//                                bundle.putString("vperfil", perfil);
+//
+//                                bundle.putString("vnombre", documentoViewHolder.getNombre());
+//                                Intent newDDocumentsActivity = new Intent(v.getContext(), UploadImageActivity.class);
+//                                newDDocumentsActivity.putExtras(bundle);
+//                                v.getContext().startActivity(newDDocumentsActivity);
 
                             }
                             /*AlertDialog.Builder builder = new AlertDialog.Builder(contextDetalleDocumento);
