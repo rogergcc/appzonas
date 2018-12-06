@@ -72,8 +72,8 @@ dependencies {
 
     //implementation 'com.amitshekhar.android:android-networking:1.0.2'
 
-    //pdf viewer
-    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    //pdf viewer esta libreria agrega 16MB mas al apk
+    //implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
 
 
 }

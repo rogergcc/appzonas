@@ -81,6 +81,8 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     public void DocumentoPorEspecialistaListarExternoJson() {
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
 
+        documentoList.clear();
+
         String servicio = "";
         if (perfil.equals("1003") || perfil.equals("1004")) {
             servicio="DocumentoPorResponsableRevisionListarExternoJson";
@@ -114,7 +116,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                         JSONArray jRoutes = null;
                         try {
                             jRoutes = response.getJSONArray("data");
-                            documentoList.clear();
+
                             for (int i = 0; i < jRoutes.length(); i++) {
                                 JSONObject jsonObject = jRoutes.getJSONObject(i);
 

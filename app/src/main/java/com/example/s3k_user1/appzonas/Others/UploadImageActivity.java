@@ -10,6 +10,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -29,16 +30,15 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.DetalleDocumentosActivity;
 import com.example.s3k_user1.appzonas.WebTokenActivity;
 import com.example.s3k_user1.appzonas.R;
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
-import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+
+
+
 import com.google.android.gms.common.util.IOUtils;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
-import com.shockwave.pdfium.PdfDocument;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,31 +46,33 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileStore;
-import java.nio.file.Files;
+
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
-public class UploadImageActivity extends AppCompatActivity implements View.OnClickListener, OnPageChangeListener, OnLoadCompleteListener,
-        OnPageErrorListener {
+public class UploadImageActivity extends AppCompatActivity implements View.OnClickListener
+//        , OnPageChangeListener, OnLoadCompleteListener,
+//        OnPageErrorListener
+{
 
     Button btnElegirImagen,btnSubirImagen;
-    EditText edtNombreImagen;
+
     ImageView imgView;
     final int IMG_REQUEST =1;
     final int FILE_REQUEST =1;
     Bitmap bitmap;
     File myFileGlobal;
 
-    private PDFView pdfView;
+
     private String pdfFileName;
     private int pageNumber = 0;
 
     private String IP_LEGAL = WebTokenActivity.IP_APK;
 
-    private String respuestaRevisizarDocuento = "";
+    private boolean respuestaRevisizarDocuento = false;
     private ProgressDialog progressDialog;
+    View view;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,11 +80,11 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 
         btnElegirImagen = findViewById(R.id.btnElegirImagen);
         btnSubirImagen = findViewById(R.id.btnSubirImagen);
-        edtNombreImagen = findViewById(R.id.edtNombreImagen);
+
         imgView = findViewById(R.id.imagen);
 
-        pdfView = findViewById(R.id.pdfView);
 
+        view = findViewById(R.id.view_uploadimage);
         btnSubirImagen.setOnClickListener(this);
         btnElegirImagen.setOnClickListener(this);
 
@@ -108,24 +110,24 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         return result;
     }
 
-    private void displayFromFile(File file) {
-
-        Uri uri = Uri.fromFile(new File(file.getAbsolutePath()));
-        Log.e("uri: ",file.getAbsolutePath());
-
-        pdfFileName = getFileName(uri);
-
-        Log.e("pdfFileName: ",pdfFileName);
-        pdfView.fromFile(file)
-                .defaultPage(pageNumber)
-                .onPageChange(this)
-                .enableAnnotationRendering(true)
-                .onLoad(this)
-                .scrollHandle(new DefaultScrollHandle(this))
-                .spacing(10) // in dp
-                .onPageError(this)
-                .load();
-    }
+//    private void displayFromFile(File file) {
+//
+//        Uri uri = Uri.fromFile(new File(file.getAbsolutePath()));
+//        Log.e("uri: ",file.getAbsolutePath());
+//
+//        pdfFileName = getFileName(uri);
+//
+//        Log.e("pdfFileName: ",pdfFileName);
+//        pdfView.fromFile(file)
+//                .defaultPage(pageNumber)
+//                .onPageChange(this)
+//                .enableAnnotationRendering(true)
+//                .onLoad(this)
+//                .scrollHandle(new DefaultScrollHandle(this))
+//                .spacing(10) // in dp
+//                .onPageError(this)
+//                .load();
+//    }
     private void selectImage(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -250,7 +252,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                         try {
                             //JSONObject objectUser = jsonObject.getJSONObject("usuario");
 
-                            String respuesta = jsonObject.getString("mensaje");
+                            boolean respuesta = jsonObject.getBoolean("respuestaConsulta");
                              mensaje = jsonObject.getString("mensaje");
 
                             respuestaRevisizarDocuento= respuesta;
@@ -258,7 +260,15 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        View v1 = getWindow().getDecorView().getRootView();
+
                         Toast.makeText(UploadImageActivity.this,mensaje , Toast.LENGTH_SHORT).show();
+                        Snackbar.make(v1, mensaje, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                        if(respuestaRevisizarDocuento){
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), DetalleDocumentosActivity.class));
+                        }
 
                     }
                 }, new Response.ErrorListener() {
@@ -358,7 +368,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
                 //MediaStore.Files.FileColumns.MEDIA_TYPE(p)
                 imgView.setImageBitmap(bitmap);
                 imgView.setVisibility(View.VISIBLE);
-                edtNombreImagen.setVisibility(View.VISIBLE);
+
 
                     //IOUtils.toByteArray(myFile);
             } catch (IOException e) {
@@ -369,31 +379,31 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void loadComplete(int nbPages) {
-        PdfDocument.Meta meta = pdfView.getDocumentMeta();
-
-        printBookmarksTree(pdfView.getTableOfContents(), "-");
-    }
-
-    public void printBookmarksTree(List<PdfDocument.Bookmark> tree, String sep) {
-        for (PdfDocument.Bookmark b : tree) {
-
-            //Log.e(TAG, String.format("%s %s, p %d", sep, b.getTitle(), b.getPageIdx()));
-
-            if (b.hasChildren()) {
-                printBookmarksTree(b.getChildren(), sep + "-");
-            }
-        }
-    }
-    @Override
-    public void onPageChanged(int page, int pageCount) {
-        pageNumber = page;
-        setTitle(String.format("%s %s / %s", pdfFileName, page + 1, pageCount));
-    }
-
-    @Override
-    public void onPageError(int page, Throwable t) {
-
-    }
+//    @Override
+//    public void loadComplete(int nbPages) {
+//        PdfDocument.Meta meta = pdfView.getDocumentMeta();
+//
+//        printBookmarksTree(pdfView.getTableOfContents(), "-");
+//    }
+//
+//    public void printBookmarksTree(List<PdfDocument.Bookmark> tree, String sep) {
+//        for (PdfDocument.Bookmark b : tree) {
+//
+//            //Log.e(TAG, String.format("%s %s, p %d", sep, b.getTitle(), b.getPageIdx()));
+//
+//            if (b.hasChildren()) {
+//                printBookmarksTree(b.getChildren(), sep + "-");
+//            }
+//        }
+//    }
+//    @Override
+//    public void onPageChanged(int page, int pageCount) {
+//        pageNumber = page;
+//        setTitle(String.format("%s %s / %s", pdfFileName, page + 1, pageCount));
+//    }
+//
+//    @Override
+//    public void onPageError(int page, Throwable t) {
+//
+//    }
 }
