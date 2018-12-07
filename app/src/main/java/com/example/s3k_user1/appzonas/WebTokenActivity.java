@@ -112,7 +112,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    public static String IP_APK =  "http://192.168.1.50";
+    public static String IP_APK =  "http://192.168.1.42";
     /**
      * Acceso habilitado.
      */
@@ -244,10 +244,10 @@ public class WebTokenActivity extends AppCompatActivity implements
     }
     private String hmsTimeFormatter(long milliSeconds) {
 
-        String hms = String.format("%02d",
-
+        String hms = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(milliSeconds),
+                TimeUnit.MILLISECONDS.toMinutes(milliSeconds) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliSeconds)),
                 TimeUnit.MILLISECONDS.toSeconds(milliSeconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
-
         return hms;
 
 
