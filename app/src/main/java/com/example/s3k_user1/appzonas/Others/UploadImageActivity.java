@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatRadioButton;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -56,15 +58,16 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 //        OnPageErrorListener
 {
 
-    Button btnElegirImagen,btnSubirImagen;
+    Button btnElegirImagenOPdf,btnSubirImagen;
 
     ImageView imgView;
     final int IMG_REQUEST =1;
     final int FILE_REQUEST =1;
+    final int FILE_IMAGE_PDF_REQUEST=1;
     Bitmap bitmap;
     File myFileGlobal;
 
-
+    AppCompatRadioButton rbImagen,rbPdf;
     private String pdfFileName;
     private int pageNumber = 0;
 
@@ -73,21 +76,32 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     private boolean respuestaRevisizarDocuento = false;
     private ProgressDialog progressDialog;
     View view;
+
+    private boolean archivoUploadEsImagen=false;
+    String fileStringImagenOrPdf;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_image);
 
-        btnElegirImagen = findViewById(R.id.btnElegirImagen);
+        btnElegirImagenOPdf = findViewById(R.id.btnElegirImagenOPdf);
         btnSubirImagen = findViewById(R.id.btnSubirImagen);
 
         imgView = findViewById(R.id.imagen);
 
+        rbImagen = findViewById(R.id.rbImagen);
+        rbPdf=findViewById(R.id.rbPdf);
 
         view = findViewById(R.id.view_uploadimage);
         btnSubirImagen.setOnClickListener(this);
-        btnElegirImagen.setOnClickListener(this);
+        btnElegirImagenOPdf.setOnClickListener(this);
 
+        if (rbImagen.isChecked()){
+            btnElegirImagenOPdf.setText("Elegir Imagen");
+        }
+        if (rbPdf.isChecked()){
+            btnElegirImagenOPdf.setText("Elegir Pdf");
+        }
     }
 
     public String getFileName(Uri uri) {
@@ -109,7 +123,10 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         }
         return result;
     }
+    public String checkImageOrPdfSelection(String image){
 
+        return "SAF";
+    }
 //    private void displayFromFile(File file) {
 //
 //        Uri uri = Uri.fromFile(new File(file.getAbsolutePath()));
@@ -132,25 +149,35 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent,IMG_REQUEST);
+        startActivityForResult(intent,FILE_IMAGE_PDF_REQUEST);
     }
     private void selectFilePDF(){
         Intent intent = new Intent();
 
-
         //intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setType("application/pdf");
-        startActivityForResult(intent,FILE_REQUEST);
+        startActivityForResult(intent,FILE_IMAGE_PDF_REQUEST);
     }
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.btnElegirImagen:
-//                selectFilePDF();
-                selectImage();
+            case R.id.btnElegirImagenOPdf:
+                if (rbImagen.isChecked()){
+                    selectImage();
+                    archivoUploadEsImagen=true;
+                }
+                if (rbPdf.isChecked()){
+                    selectFilePDF();
+                }
+
                 break;
             case R.id.btnSubirImagen:
+                if (TextUtils.isEmpty(fileStringImagenOrPdf)) {
+
+                    Toast.makeText(getApplicationContext(), "Eliga un archivo", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 //                RevizarDocumentoPDFJson();
 
                 RevizarDocumentoJson(); //Web service revizar Correcto
@@ -233,9 +260,9 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
             js.put("esRechazado",esRechazado);
             js.put("observacion",observacion);
             js.put("perfil",perfil);
-            js.put("imagen",imageToString(bitmap));
+            js.put("fileImagenOrPdf",fileStringImagenOrPdf);
             js.put("nombre",nombre);
-
+            js.put("esImagen",archivoUploadEsImagen);
             Log.e("Datos:", js.toString());
 
         }catch (JSONException e) {
@@ -333,10 +360,9 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode==IMG_REQUEST &&
+        if (requestCode==FILE_IMAGE_PDF_REQUEST &&
                resultCode==RESULT_OK && data!=null ){
 
-//            Uri uri = data.getData();
 //            try {
 //                String uriString = uri.toString();
 //                File myFile = new File(getPDFPath(uri));
@@ -356,22 +382,29 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 //                Log.e("EXXcep", e.getMessage());
 //                e.printStackTrace();
 //            }
-
-
-
-
             Uri path = data.getData();
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),path);
+                if (rbImagen.isChecked()){
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),path);
 
-                Log.e("FILE STR",imageToString(bitmap));
-                //MediaStore.Files.FileColumns.MEDIA_TYPE(p)
-                imgView.setImageBitmap(bitmap);
-                imgView.setVisibility(View.VISIBLE);
+                    Log.e("FILE STR",imageToString(bitmap));
+                    //MediaStore.Files.FileColumns.MEDIA_TYPE(p)
+                    imgView.setImageBitmap(bitmap);
+                    imgView.setVisibility(View.VISIBLE);
+                    fileStringImagenOrPdf=imageToString(bitmap);
+
+                }
+                if (rbPdf.isChecked()){
+                    String displayName = null;
+
+                    myFileGlobal = new File(getPDFPath(path));
+                    displayName = myFileGlobal.getName();
+                    fileStringImagenOrPdf=fileToString(myFileGlobal);
+                }
 
 
-                    //IOUtils.toByteArray(myFile);
-            } catch (IOException e) {
+            } catch (Exception e) {
+                Log.e("EXcep", e.getMessage());
                 e.printStackTrace();
             }
         }

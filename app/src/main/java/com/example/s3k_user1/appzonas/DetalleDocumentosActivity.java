@@ -219,11 +219,33 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         //
     }
 
-    public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil, String imagen, String nombre) {
+    public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil, String fileImagenOrPdf, String nombre, boolean esImagen) {
         //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
-        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson?usuarioId="+usuarioId+"&documentoId="+documentoId+ "&esRechazado="+esRechazado + "&observacion="+observacion+ "&perfil="+perfil + "&imagen"+imagen+ "&nombre"+nombre;
-        Log.w("URL LOGIN: ", url);
-        Log.w("datos parametros: ", usuarioId+" - docid:"+documentoId +" - esRechazado:"+ esRechazado+" -Observacion:"+observacion+ " -perfil:"+perfil );
+        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson";
+        //Log.w("URL LOGIN: ", url);
+        //Log.w("datos parametros: ", usuarioId+" - docid:"+documentoId +" - esRechazado:"+ esRechazado+" -Observacion:"+observacion+ " -perfil:"+perfil );
+
+        JSONObject js = new JSONObject();
+
+        try {
+            JSONObject params = new JSONObject();
+
+
+            js.put("usuarioId",usuarioId);
+            js.put("documentoId",documentoId);
+            js.put("esRechazado",esRechazado);
+            js.put("observacion",observacion);
+            js.put("perfil",perfil);
+            js.put("fileImagenOrPdf",fileImagenOrPdf);
+            js.put("nombre",nombre);
+            js.put("esImagen",esImagen);
+
+            Log.e("Datos:", js.toString());
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url, (String) null,
                 new Response.Listener<JSONObject>() {
@@ -560,7 +582,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                                 v.getContext().startActivity(newDDocumentsActivity);
                                 //startActivity(new Intent(v.getContext(), UploadImageActivity.class));
                             } else {
-                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","");
+                                RevizarDocumentoJson(Integer.parseInt(id),documentoId,"No","",perfil,"","",false);
                                 Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
                                         .setAction("Action", null).show();
 

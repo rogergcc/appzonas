@@ -8,12 +8,10 @@
     tools:context=".Others.UploadImageActivity">
 
 
-
     <ImageView
         android:id="@+id/imagen"
         android:layout_width="300dp"
         android:layout_height="250dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
@@ -22,12 +20,45 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        android:contentDescription="fhfh" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnElegirImagenOPdf"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.981">
 
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rbImagen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="IMAGEN" />
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rbPdf"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="PDF" />
+        </RadioGroup>
+
+    </LinearLayout>
 
     <Button
-        android:id="@+id/btnElegirImagen"
+        android:id="@+id/btnElegirImagenOPdf"
 
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -37,7 +68,7 @@
 
         android:backgroundTint="@color/colorAppLegal"
         android:drawableStart="@mipmap/ic_elegir_imagen"
-        android:text="Elegir Imagen"
+        android:text="Elegir"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/btnSubirImagen"
         app:layout_constraintEnd_toEndOf="parent"
