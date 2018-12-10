@@ -58,7 +58,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 //        OnPageErrorListener
 {
 
-    Button btnElegirImagenOPdf,btnSubirImagen;
+    Button btnElegirImagenOPdf,btnSubirImagenOPdf;
 
     ImageView imgView;
     final int IMG_REQUEST =1;
@@ -78,14 +78,14 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     View view;
 
     private boolean archivoUploadEsImagen=false;
-    String fileStringImagenOrPdf;
+    String fileStringImagenOrPdf="-1";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_image);
 
         btnElegirImagenOPdf = findViewById(R.id.btnElegirImagenOPdf);
-        btnSubirImagen = findViewById(R.id.btnSubirImagen);
+        btnSubirImagenOPdf = findViewById(R.id.btnSubirImagenOPdf);
 
         imgView = findViewById(R.id.imagen);
 
@@ -93,15 +93,12 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         rbPdf=findViewById(R.id.rbPdf);
 
         view = findViewById(R.id.view_uploadimage);
-        btnSubirImagen.setOnClickListener(this);
+        rbImagen.setOnClickListener(this);
+        rbPdf.setOnClickListener(this);
+        btnSubirImagenOPdf.setOnClickListener(this);
         btnElegirImagenOPdf.setOnClickListener(this);
 
-        if (rbImagen.isChecked()){
-            btnElegirImagenOPdf.setText("Elegir Imagen");
-        }
-        if (rbPdf.isChecked()){
-            btnElegirImagenOPdf.setText("Elegir Pdf");
-        }
+
     }
 
     public String getFileName(Uri uri) {
@@ -162,25 +159,46 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.rbImagen:
+                btnElegirImagenOPdf.setText("Elegir Imagen");
+                btnSubirImagenOPdf.setText("Subir Imagen");
+                break;
+            case R.id.rbPdf:
+                btnElegirImagenOPdf.setText("Elegir PDF");
+                btnSubirImagenOPdf.setText("Subir PDF");
+                break;
             case R.id.btnElegirImagenOPdf:
-                if (rbImagen.isChecked()){
-                    selectImage();
-                    archivoUploadEsImagen=true;
-                }
-                if (rbPdf.isChecked()){
-                    selectFilePDF();
+
+                if (rbImagen.isChecked() || rbPdf.isChecked()) {
+
+                    if (rbImagen.isChecked()) {
+                        Log.w("Seleccion", "imagenChecked");
+                        selectImage();
+                        archivoUploadEsImagen = true;
+                    }
+                    if (rbPdf.isChecked()) {
+                        Log.w("Seleccion", "pdf checked");
+                        selectFilePDF();
+                    }
+                }else {
+                    Toast.makeText(getApplicationContext(), "Seleccione Imagen o Pdf", Toast.LENGTH_SHORT).show();
+
                 }
 
                 break;
-            case R.id.btnSubirImagen:
-                if (TextUtils.isEmpty(fileStringImagenOrPdf)) {
+            case R.id.btnSubirImagenOPdf:
 
-                    Toast.makeText(getApplicationContext(), "Eliga un archivo", Toast.LENGTH_SHORT).show();
+                if(fileStringImagenOrPdf.equals("-1")) {
+                    Log.e("SI",fileStringImagenOrPdf);
+                    Toast.makeText(getApplicationContext(), "Antes eliga un archivo", Toast.LENGTH_SHORT).show();
                     return;
+                }
+                else{
+                    RevizarDocumentoJson(); //Web service revizar Correcto
                 }
 //                RevizarDocumentoPDFJson();
 
-                RevizarDocumentoJson(); //Web service revizar Correcto
+
                 break;
         }
     }
@@ -382,31 +400,41 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 //                Log.e("EXXcep", e.getMessage());
 //                e.printStackTrace();
 //            }
-            Uri path = data.getData();
-            try {
-                if (rbImagen.isChecked()){
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),path);
 
-                    Log.e("FILE STR",imageToString(bitmap));
+            Uri path = data.getData();
+            Log.e("FILE_IMAGE_PDF_REQUEST",FILE_IMAGE_PDF_REQUEST+"");
+            Log.e("RESULT_OK",RESULT_OK+"");
+            Log.e("data",data+"");
+
+            if (rbPdf.isChecked()){
+                String displayName = null;
+
+                File myFile = new File(getPDFPath(path));
+                Log.e("INgreso","Ingreos pdf check resu");
+                Log.e("FILE PDF",fileToString(myFile));
+                //myFileGlobal = new File(getPDFPath(path));
+                displayName = myFile.getName();
+                fileStringImagenOrPdf=fileToString(myFile);
+
+            }
+
+                if (rbImagen.isChecked()){
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),path);
+                    } catch (IOException e) {
+                        Log.e("Excep", e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    Log.e("FILE IMG",imageToString(bitmap));
                     //MediaStore.Files.FileColumns.MEDIA_TYPE(p)
                     imgView.setImageBitmap(bitmap);
                     imgView.setVisibility(View.VISIBLE);
                     fileStringImagenOrPdf=imageToString(bitmap);
 
                 }
-                if (rbPdf.isChecked()){
-                    String displayName = null;
-
-                    myFileGlobal = new File(getPDFPath(path));
-                    displayName = myFileGlobal.getName();
-                    fileStringImagenOrPdf=fileToString(myFileGlobal);
-                }
 
 
-            } catch (Exception e) {
-                Log.e("EXcep", e.getMessage());
-                e.printStackTrace();
-            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);

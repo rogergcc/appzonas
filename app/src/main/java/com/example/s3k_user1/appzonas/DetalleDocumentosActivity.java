@@ -81,7 +81,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     public void DocumentoPorEspecialistaListarExternoJson() {
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
 
-        documentoList.clear();
+        //documentoList.clear();
 
         String servicio = "";
         if (perfil.equals("1003") || perfil.equals("1004")) {
@@ -98,6 +98,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         cantidadDePetiticiones++;
 
         Log.e(TAG,"CANTIDA DE PETICIONES: "+ cantidadDePetiticiones);
+        Log.w(TAG,"W EstadoDoc: "+ EstadoDoc);
         Log.w(TAG,"W USUARIO ID: "+ id);
 
         if ( cantidadDePetiticiones<=1){
@@ -112,6 +113,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.w(TAG,response.toString());
+                        documentoList.clear();
                         hidepDialog();
                         JSONArray jRoutes = null;
                         try {

@@ -70,12 +70,12 @@
         android:drawableStart="@mipmap/ic_elegir_imagen"
         android:text="Elegir"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/btnSubirImagen"
+        app:layout_constraintBottom_toTopOf="@+id/btnSubirImagenOPdf"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btnSubirImagen"
+        android:id="@+id/btnSubirImagenOPdf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="44dp"
@@ -83,7 +83,7 @@
         android:layout_marginStart="8dp"
         android:backgroundTint="@color/colorAppLegal"
         android:drawableLeft="@mipmap/upload"
-        android:text="subir imagen"
+        android:text="subir"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
