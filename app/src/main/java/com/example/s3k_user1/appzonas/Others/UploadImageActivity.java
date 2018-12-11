@@ -332,8 +332,6 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         };
         };
 
-
-
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
 
@@ -358,8 +356,10 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         byte[] fileBytes = new byte[0];
         try {
             fileBytes = IOUtils.toByteArray(file);
+            Log.e("Datos PDF:", fileBytes.toString());
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("error PDF:", "EEEE");
         }
 
         return Base64.encodeToString(fileBytes,Base64.DEFAULT);
@@ -401,7 +401,7 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 //                e.printStackTrace();
 //            }
 
-            Uri path = data.getData();
+            Uri uri = data.getData();
             Log.e("FILE_IMAGE_PDF_REQUEST",FILE_IMAGE_PDF_REQUEST+"");
             Log.e("RESULT_OK",RESULT_OK+"");
             Log.e("data",data+"");
@@ -409,30 +409,42 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
             if (rbPdf.isChecked()){
                 String displayName = null;
 
-                File myFile = new File(getPDFPath(path));
-                Log.e("INgreso","Ingreos pdf check resu");
-                Log.e("FILE PDF",fileToString(myFile));
-                //myFileGlobal = new File(getPDFPath(path));
-                displayName = myFile.getName();
-                fileStringImagenOrPdf=fileToString(myFile);
+                try {
+                    File myFile = new File(getPDFPath(uri));
+                    Log.e("INgreso","Ingreos pdf check resu");
+                    Log.e("FILE PDF",fileToString(myFile));
 
+
+
+                    String path = myFile.getAbsolutePath();
+
+                    displayName = myFile.getName();
+                    Log.e("displayName: ",displayName);
+//                Log.e("path: ",path);
+                    myFileGlobal = new File(getPDFPath(uri));
+                    fileStringImagenOrPdf=fileToString(myFileGlobal);
+
+                }catch (Exception e) {
+                    Log.e("EXXcep paa", e.getMessage());
+                    e.printStackTrace();
+                }
             }
 
-                if (rbImagen.isChecked()){
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),path);
-                    } catch (IOException e) {
-                        Log.e("Excep", e.getMessage());
-                        e.printStackTrace();
-                    }
-
-                    Log.e("FILE IMG",imageToString(bitmap));
-                    //MediaStore.Files.FileColumns.MEDIA_TYPE(p)
-                    imgView.setImageBitmap(bitmap);
-                    imgView.setVisibility(View.VISIBLE);
-                    fileStringImagenOrPdf=imageToString(bitmap);
-
+            if (rbImagen.isChecked()){
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
+                } catch (IOException e) {
+                    Log.e("Excep", e.getMessage());
+                    e.printStackTrace();
                 }
+
+                Log.e("FILE IMG",imageToString(bitmap));
+                //MediaStore.Files.FileColumns.MEDIA_TYPE(p)
+                imgView.setImageBitmap(bitmap);
+                imgView.setVisibility(View.VISIBLE);
+                fileStringImagenOrPdf=imageToString(bitmap);
+
+            }
 
 
         }
