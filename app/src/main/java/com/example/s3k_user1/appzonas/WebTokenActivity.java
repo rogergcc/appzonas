@@ -81,6 +81,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * type Maps activity.
+ * SESION WEB POR NOTIFICACION
+ * MAPA , IMEI, TOKEN WEB, NOTIFICACION
  */
 public class WebTokenActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {

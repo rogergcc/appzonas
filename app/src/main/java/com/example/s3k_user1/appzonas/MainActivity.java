@@ -17,7 +17,7 @@ import com.example.s3k_user1.appzonas.fragment.StoreFragment;
 import com.example.s3k_user1.appzonas.helper.BottomNavigationBehavior;
 
 public class MainActivity extends AppCompatActivity {
-
+    //todo clase no utilizada en la app
     private ActionBar toolbar;
 
     @Override

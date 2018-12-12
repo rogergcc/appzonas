@@ -34,6 +34,8 @@ public class SessionManager {
     // Email address (make variable public to access from outside)
     public static final String KEY_USUARIO_ID = "usuarioId";
 
+    public static final String KEY_EMPLEADO_ID = "empleadoId";
+
     public static final String KEY_USUARIO_EMPLEADO = "usuarioEmpleado";
 
     public static final String KEY_USUARIO_CORREO = "usuarioCorreo";
@@ -49,13 +51,14 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String usuarioNombre, String usuarioId,String empleado, String correo, String rol){
+    public void createLoginSession(String usuarioNombre,String empleadoId, String usuarioId,String empleado, String correo, String rol){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
         // Storing usuarioNombre in pref
         editor.putString(KEY_USUARIO_NOMBRE, usuarioNombre);
 
+        editor.putString(KEY_EMPLEADO_ID, empleadoId);
         // Storing usuarioId in pref
         editor.putString(KEY_USUARIO_ID, usuarioId);
 
@@ -102,6 +105,8 @@ public class SessionManager {
 
         // user usuarioId id
         user.put(KEY_USUARIO_ID, pref.getString(KEY_USUARIO_ID, null));
+
+        user.put(KEY_EMPLEADO_ID, pref.getString(KEY_EMPLEADO_ID, null));
 
         user.put(KEY_USUARIO_EMPLEADO, pref.getString(KEY_USUARIO_EMPLEADO, null));
 

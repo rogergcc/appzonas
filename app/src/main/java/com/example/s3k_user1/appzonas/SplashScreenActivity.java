@@ -47,6 +47,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     public static String USUARIOEMPLEADO="";
     public static String USUARIOCORREO="";
     public static String USUARIOROL="";
+    public static String EMPLEADOID="";
     RelativeLayout rellay1, rellay2;
     ImageView imagen_logo_splash_screen;
     Button btnIngresarPantallaTokenWeb;
@@ -75,74 +76,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     };
 
-    public void ValidacionLoginExternoJson(String usuLogin, String usuPassword) {
-        //https://api.myjson.com/bins/wicz0
-        //String url = "http://192.168.0.12/documentosLista.json";
-
-        Log.e("MENSAJE VALIDA: ", "u:" + usuLogin + " - "+ usuPassword);
-        String url = IP_LEGAL+"/legal/Usuario/ValidacionLoginExternoJson?usuLogin="+usuLogin+"&usuPassword="+usuPassword;
-        Log.e("URL LOGIN: ", url);
-        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                url,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        Log.e("MENSAJE VALIDA: ", jsonObject.toString());
-                        try {
-                            JSONObject objectUser = jsonObject.getJSONObject("usuario");
-
-                            String respuestSesion = jsonObject.getString("respuesta");
-                            String mensaje = jsonObject.getString("mensaje");
-                            USUARIOID =jsonObject.getString("usuarioId");
-                            USUARIONOMBRE =jsonObject.getString("usuarioNombre");
-
-                            USUARIOEMPLEADO =objectUser.getString("NombreEmpleado");
-
-                            USUARIOCORREO =jsonObject.getString("correo");
-
-                            USUARIOROL =jsonObject.getString("rol");
-
-                            respuestaLogin = jsonObject.getBoolean("respuesta");
-                            Log.e("Respuesta Login", String.valueOf(respuestaLogin));
-                            mensajeLogin = mensaje;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
 
 
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-
-                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
-                }
-            }
-        }) {
-            @Override
-            public Priority getPriority() {
-                return Priority.IMMEDIATE;
-            }
-        };
-
-        /*
-        Toast.makeText(SplashScreenActivity.this,
-                "resp_F_validacion: " + respuestaLogin,
-                Toast.LENGTH_SHORT).show();
-                */
-
-
-        RequestQueue requestQueue = Volley.newRequestQueue(SplashScreenActivity.this);
-        JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                10000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        requestQueue.add(JsonObjectRequest);
-
-    }
 
     public void ValidacionLogin() {
         final String username = edtusuario.getText().toString();
@@ -200,16 +135,19 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 USUARIONOMBRE =jsonObject.getString("usuarioNombre");
 
                                 USUARIOEMPLEADO =objectUser.getString("NombreEmpleado");
-
+                                EMPLEADOID =objectUser.getInt("EmpleadoID")+"";
                                 USUARIOCORREO =jsonObject.getString("correo");
 
                                 USUARIOROL =jsonObject.getString("rol");
 
                                 respuestaLogin = jsonObject.getBoolean("respuesta");
                                 Log.e("Respuesta Login", String.valueOf(respuestaLogin));
+
+                                Log.e("Log EMPLEADOID", String.valueOf(EMPLEADOID));
+
                                 //mensajeLogin = mensaje;
 
-                                session.createLoginSession(USUARIONOMBRE, USUARIOID,USUARIOEMPLEADO,USUARIOCORREO,USUARIOROL);
+                                session.createLoginSession(USUARIONOMBRE,EMPLEADOID, USUARIOID,USUARIOEMPLEADO,USUARIOCORREO,USUARIOROL);
 
                                 //starting the profile activity
                                 finish();

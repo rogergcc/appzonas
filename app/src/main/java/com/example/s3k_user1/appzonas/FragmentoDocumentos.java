@@ -113,6 +113,35 @@ public class FragmentoDocumentos extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(JsonObjectRequest);
     }
+
+    private void poblarEstados(){
+        //        29	STATUS DOCUMENTO	TERMINADO
+//        31	STATUS DOCUMENTO	CANCELADO
+//        30	STATUS DOCUMENTO	CURSO
+        EstadoProceso estaProcesoPrimero = new EstadoProceso();
+        estaProcesoPrimero.setEstadoProcesoId("32");
+        estaProcesoPrimero.setNombre("EN TRAMITE");
+        estaProcesoPrimero.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoPrimero);
+
+        EstadoProceso estaProcesoSEg = new EstadoProceso();
+        estaProcesoSEg.setEstadoProcesoId("29");
+        estaProcesoSEg.setNombre("TERMINADO");
+        estaProcesoSEg.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoSEg);
+
+        EstadoProceso estaProcesoTer = new EstadoProceso();
+        estaProcesoTer.setEstadoProcesoId("31");
+        estaProcesoTer.setNombre("CANCELADO");
+        estaProcesoTer.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoTer);
+
+        EstadoProceso estaProcesoCuar = new EstadoProceso();
+        estaProcesoCuar.setEstadoProcesoId("30");
+        estaProcesoCuar.setNombre("CURSO");
+        estaProcesoCuar.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoCuar);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -128,11 +157,10 @@ public class FragmentoDocumentos extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view_tarjetas);
         estadoProcesos = new ArrayList<>();
-        EstadoProceso estaProcesoPrimero = new EstadoProceso();
-        estaProcesoPrimero.setNombre("POR APROBAR");
-        estaProcesoPrimero.setEstadoProcesoId("26");
-        estadoProcesos.add(estaProcesoPrimero);
-        obtenerEstadoProcesoStatusTramiteJson();
+
+        poblarEstados();
+
+        //obtenerEstadoProcesoStatusTramiteJson();
 
         mAdapter = new StoreAdapter(getActivity(), estadoProcesos);
 
@@ -238,10 +266,15 @@ public class FragmentoDocumentos extends Fragment {
                     bundle.putString("vIdEstadoDoc", estadoProcesoViewHolder.getEstadoProcesoId());
                     bundle.putString("vNombreDoc", estadoProcesoViewHolder.getNombre());
 
-
-                    Intent newDDocumentsActivity = new Intent(v.getContext(), DetalleDocumentosActivity.class);
-                    newDDocumentsActivity.putExtras(bundle);
-                    v.getContext().startActivity(newDDocumentsActivity);
+                    if (estadoProcesoViewHolder.getNombre().equals("EN TRAMITE")){
+                        Intent intentTramite = new Intent(v.getContext(), DocumentosActivity.class);
+                        intentTramite.putExtras(bundle);
+                        v.getContext().startActivity(intentTramite);
+                    }else{
+                        Intent newDDocumentsActivity = new Intent(v.getContext(), DetalleDocumentosActivity.class);
+                        newDDocumentsActivity.putExtras(bundle);
+                        v.getContext().startActivity(newDDocumentsActivity);
+                    }
                 }
             });
             //Glide.with(context).load(movie.get(0));

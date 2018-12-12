@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class Main2Activity extends AppCompatActivity {
-
+    //todo clase no utilizada en la app
     private TextView mTextMessage;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

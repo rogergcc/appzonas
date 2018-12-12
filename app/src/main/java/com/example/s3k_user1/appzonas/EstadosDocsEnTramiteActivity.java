@@ -37,7 +37,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.Documento;
@@ -54,18 +53,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DetalleDocumentosActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-    //https://www.androidhive.info/2012/08/android-session-management-using-shared-preferences/
+
+
+public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+
 
     TextView tituloDetalle;
     private RecyclerView recyclerView;
     private List<Documento> documentoList;
-    private DetalleDocumentosActivity.StoreAdapter mAdapter;
+    private EstadosDocsEnTramiteActivity.StoreAdapter mAdapter;
     private View vista;
     private String IP_LEGAL = WebTokenActivity.IP_APK;
-    private static final String TAG = DetalleDocumentosActivity.class.getSimpleName();
+    private static final String TAG = EstadosDocsEnTramiteActivity.class.getSimpleName();
     SwipeRefreshLayout mSwipeRefreshLayout;
-        //https://prmadi.com/handling_volley_request_when_network_connection_is_slow/
+    //https://prmadi.com/handling_volley_request_when_network_connection_is_slow/
 
     private String EstadoDoc = "";
     private String NombreDoc = "";
@@ -82,116 +83,16 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     ProgressDialog progressDialog;
     FloatingActionButton floatingActionButton;
-    public void DocumentoPorEspecialistaListarExternoJson() {
-        String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
 
-        //documentoList.clear();
-
-        String servicio = "";
-        if (perfil.equals("1003") || perfil.equals("1004")) {
-            servicio="DocumentoPorResponsableRevisionListarExternoJson";
-        } else {
-            servicio="DocumentoPorEspecialistaListarExternoJson";
-        }
-        //progressDialog.setCancelable(false);
-        //progressDialog.setIndeterminate(true);
-        //progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-
-        // Descomentar mSwipeRefreshLayout.setRefreshing(true);
-
-        cantidadDePetiticiones++;
-
-        Log.e(TAG,"CANTIDA DE PETICIONES: "+ cantidadDePetiticiones);
-        Log.w(TAG,"W EstadoDoc: "+ EstadoDoc);
-        Log.w(TAG,"W USUARIO ID: "+ usuarioId);
-
-        if ( cantidadDePetiticiones<=1){
-        //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
-        String url = IP_LEGAL + "/legal/Documento/"+servicio+"?estadoProcesoId="+EstadoDoc+"&usuarioId="+usuarioId;
-
-        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-                url, (String) null,
-                new Response.Listener<JSONObject>() {
-
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.w(TAG,response.toString());
-                        documentoList.clear();
-                        hidepDialog();
-                        JSONArray jRoutes = null;
-                        try {
-                            jRoutes = response.getJSONArray("data");
-
-                            for (int i = 0; i < jRoutes.length(); i++) {
-                                JSONObject jsonObject = jRoutes.getJSONObject(i);
-
-                                Documento documentoNew = new Documento();
-                                documentoNew.setDocumentoId(jsonObject.getInt("DocumentoId"));
-                                documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
-                                documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
-                                documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
-                                documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
-
-                                documentoList.add(documentoNew);
-                                //Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        //progressDialog.hide();
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Error: " + error.getMessage());
-                //progressDialog.hide();
-                hidepDialog();
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-
-                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
-                }
-            }
-        }) {
-            @Override
-                public Request.Priority getPriority() {
-                return Priority.HIGH;
-            }
-        };
-
-
-        //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
-        /*JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
-
-        //RequestQueue requestQueue = Volley.newRequestQueue(DetalleDocumentosActivity.this);
-            // requestQueue.add(JsonObjectRequest);
-            // MyApplication.getInstance().addToRequestQueue(JsonObjectRequest);
-
-            AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(JsonObjectRequest,REQUEST_TAG);
-        }
-
-    }
-
-    public void ListarDocumentosPorStatusDocumentoApp() {
+    public void ListarDocumentosAprobadosApp() {
 
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
         cantidadDePetiticiones++;
-
-        Log.e(TAG,"CANTIDA DE PETICIONES: "+ cantidadDePetiticiones);
-        Log.w(TAG,"W EstadoDoc: "+ EstadoDoc);
-        Log.w(TAG,"W USUARIO ID: "+ usuarioId);
 
         if ( cantidadDePetiticiones<=1){
             //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
-            String url = IP_LEGAL + "/legal/RevisionDocumento/ListarDocumentosPorStatusDocumentoApp?empleadoId="+empleadoId+"&estado="+EstadoDoc;
-
+            String url = IP_LEGAL + "/legal/RevisionDocumento/ListarDocumentosAprobadosApp?empleadoId="+empleadoId+"&perfil="+perfil;
+            Log.w("URL AprobadosApp: ", url);
             JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                     url, (String) null,
                     new Response.Listener<JSONObject>() {
@@ -236,7 +137,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                     mSwipeRefreshLayout.setRefreshing(false);
                     if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
-                        DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
+                        DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva solicitar Documentos Aprobados", Toast.LENGTH_LONG).show();
                     }
                 }
             }) {
@@ -250,6 +151,76 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         }
 
     }
+
+    public void ListarDocumentosRechazadosApp() {
+
+        String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
+        cantidadDePetiticiones++;
+
+        if ( cantidadDePetiticiones<=1){
+            //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
+            String url = IP_LEGAL + "/legal/RevisionDocumento/ListarDocumentosRechazadosApp?empleadoId="+empleadoId+"&perfil="+perfil;
+            Log.w("URL RechazadosApp: ", url);
+            JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                    url, (String) null,
+                    new Response.Listener<JSONObject>() {
+
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.w(TAG,response.toString());
+                            documentoList.clear();
+                            hidepDialog();
+                            JSONArray jRoutes = null;
+                            try {
+                                jRoutes = response.getJSONArray("data");
+
+                                for (int i = 0; i < jRoutes.length(); i++) {
+                                    JSONObject jsonObject = jRoutes.getJSONObject(i);
+
+                                    Documento documentoNew = new Documento();
+                                    documentoNew.setDocumentoId(jsonObject.getInt("DocumentoId"));
+                                    documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
+                                    documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
+                                    documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
+                                    documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
+
+                                    documentoList.add(documentoNew);
+                                    //Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            //progressDialog.hide();
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "Error: " + error.getMessage());
+                    //progressDialog.hide();
+                    hidepDialog();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                        DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva solicitar Documentos Rechazados", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }) {
+                @Override
+                public Request.Priority getPriority() {
+                    return Priority.HIGH;
+                }
+            };
+
+            AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(JsonObjectRequest,REQUEST_TAG);
+        }
+
+    }
+
+
 
     public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil, String fileImagenOrPdf, String nombre, boolean esImagen) {
         //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
@@ -309,10 +280,10 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                 }
             }
         })
-            {@Override
-                public Request.Priority getPriority() {
-                return Priority.NORMAL;
-            };
+        {@Override
+        public Request.Priority getPriority() {
+            return Priority.NORMAL;
+        };
         };
 
 
@@ -322,33 +293,11 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sesion_usuario, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        String msg ="";Fragment fragment;
-        switch (item.getItemId()) {
-
-            case R.id.cerrar_sesion:
-                msg="Sesion";
-                session.logoutUser();
-                Intent intent1 = new Intent(this,SplashScreenActivity.class);
-                startActivity(intent1);
-                return true;
-
-
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalle_documentos);
+        setContentView(R.layout.activity_estados_docs_en_tramite);
 
 
 
@@ -367,18 +316,20 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         String intentDocId = getIntent().getExtras().getString("vIdEstadoDoc");
         EstadoDoc = intentDocId;
+
         String intentDocNombre = getIntent().getExtras().getString("vNombreDoc");
         NombreDoc = intentDocNombre;
+
         toolbar.setTitle(getIntent().getExtras().getString("vNombreDoc"));
         setSupportActionBar(toolbar);
 
 
 
-        vista= findViewById(R.id.act_det_document);
+        vista= findViewById(R.id.act_EnTramite);
 
 
 
-        recyclerView = findViewById(R.id.detalle_documento_recycler_view);
+        recyclerView = findViewById(R.id.EnTramite_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
 
 
@@ -396,7 +347,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
 
         documentoList = new ArrayList<>();
 
-        progressDialog = new ProgressDialog(DetalleDocumentosActivity.this);
+        progressDialog = new ProgressDialog(EstadosDocsEnTramiteActivity.this);
         progressDialog.setMessage("Espere...");
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
@@ -404,8 +355,13 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         showpDialog();
 
         //DocumentoPorEspecialistaListarExternoJson();
-        ListarDocumentosPorStatusDocumentoApp();
-        floatingActionButton = findViewById(R.id.fab_act__detalle);
+        if(NombreDoc.equals("APROBADOS")){
+            ListarDocumentosAprobadosApp();
+        }else if(NombreDoc.equals("RECHAZADOS")){
+            ListarDocumentosRechazadosApp();
+        }
+
+        floatingActionButton = findViewById(R.id.fabDocsEnTramite);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -420,7 +376,9 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         //recyclerView.setAdapter(mAdapter);
         poblarRecyclerView();
 
-
+        if (documentoList.size()==0){
+            hidepDialog();
+        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -428,7 +386,11 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     }
     private void poblarRecyclerView(){
         //DocumentoPorEspecialistaListarExternoJson();
-        ListarDocumentosPorStatusDocumentoApp();
+        if(NombreDoc.equals("APROBADOS")){
+            ListarDocumentosAprobadosApp();
+        }else if(NombreDoc.equals("RECHAZADOS")){
+            ListarDocumentosRechazadosApp();
+        }
         recyclerView.setAdapter(mAdapter);
         //mSwipeRefreshLayout.setOnRefreshListener(this);
         /*mSwipeRefreshLayout.post(new Runnable() {
@@ -453,7 +415,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     }
     public void shuffle(){
         //Collections.shuffle(documentoList, new Random(System.currentTimeMillis()));
-        //StoreAdapter adapter = new StoreAdapter(DetalleDocumentosActivity.this, documentoList);
+        //StoreAdapter adapter = new StoreAdapter(EstadosDocsEnTramiteActivity.this, documentoList);
         //recyclerView.setAdapter(adapter);
     }
 
@@ -509,7 +471,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
-    class StoreAdapter extends RecyclerView.Adapter<DetalleDocumentosActivity.StoreAdapter.MyViewHolder> {
+    class StoreAdapter extends RecyclerView.Adapter<EstadosDocsEnTramiteActivity.StoreAdapter.MyViewHolder> {
         Context contextDetalleDocumento;
         private List<Documento> movieList;
         Dialog myDialog;
@@ -542,15 +504,15 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
         }
 
         @Override
-        public DetalleDocumentosActivity.StoreAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public EstadosDocsEnTramiteActivity.StoreAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.detalle_documentos_item, parent, false);
 
-            return new DetalleDocumentosActivity.StoreAdapter.MyViewHolder(itemView);
+            return new EstadosDocsEnTramiteActivity.StoreAdapter.MyViewHolder(itemView);
         }
 
         @Override
-        public void onBindViewHolder(DetalleDocumentosActivity.StoreAdapter.MyViewHolder holder, final int position) {
+        public void onBindViewHolder(EstadosDocsEnTramiteActivity.StoreAdapter.MyViewHolder holder, final int position) {
             final Documento documentoViewHolder = documentoList.get(position);
             holder.name.setText(documentoViewHolder.getNombre());
             final int documentoId = documentoViewHolder.getDocumentoId();
@@ -677,7 +639,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
                 public void onRefresh() {
                     //documentoList.clear();
                     //DocumentoPorEspecialistaListarExternoJson();
-                    ListarDocumentosPorStatusDocumentoApp();
+                    if(NombreDoc.equals("APROBADOS")){
+                        ListarDocumentosAprobadosApp();
+                    }else if(NombreDoc.equals("RECHAZADOS")){
+                        ListarDocumentosRechazadosApp();
+                    }
+
                     refresh();
                 }
             });
@@ -686,7 +653,7 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                     StoreAdapter.this.notifyDataSetChanged();
+                    StoreAdapter.this.notifyDataSetChanged();
                     mSwipeRefreshLayoutStore.setRefreshing(false);
                 }
             },4000);
@@ -698,3 +665,4 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     }
 
 }
+

@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DocumentosActivity extends AppCompatActivity {
-
+    //TODO Documentos en TRAMITE
     private RecyclerView recyclerView;
     private List<EstadoProceso> estadoProcesos;
     private StoreAdapter mAdapter;
@@ -179,6 +179,34 @@ public class DocumentosActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    private void poblarDocumentosSegunEstado(){
+        //        29	STATUS DOCUMENTO	TERMINADO
+//        31	STATUS DOCUMENTO	CANCELADO
+//        30	STATUS DOCUMENTO	CURSO
+        EstadoProceso estaProcesoPrimero = new EstadoProceso();
+        estaProcesoPrimero.setEstadoProcesoId("32");
+        estaProcesoPrimero.setNombre("POR APROBAR");
+        estaProcesoPrimero.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoPrimero);
+
+        EstadoProceso estaProcesoSEg = new EstadoProceso();
+        estaProcesoSEg.setEstadoProcesoId("29");
+        estaProcesoSEg.setNombre("APROBADOS");
+        estaProcesoSEg.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoSEg);
+
+        EstadoProceso estaProcesoTer = new EstadoProceso();
+        estaProcesoTer.setEstadoProcesoId("31");
+        estaProcesoTer.setNombre("RECHAZADOS");
+        estaProcesoTer.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoTer);
+
+        EstadoProceso estaProcesoCuar = new EstadoProceso();
+        estaProcesoCuar.setEstadoProcesoId("30");
+        estaProcesoCuar.setNombre("STATUS  TRAMITE");
+        //estaProcesoCuar.setTipo("STATUS DOCUMENTO");
+        estadoProcesos.add(estaProcesoCuar);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,20 +223,10 @@ public class DocumentosActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.documento_recycler_view);
         estadoProcesos = new ArrayList<>();
-        EstadoProceso estaProcesoPrimero = new EstadoProceso();
-        estaProcesoPrimero.setNombre("POR APROBAR");
-        estaProcesoPrimero.setEstadoProcesoId("26");
-        estaProcesoPrimero.setCantidadDocsSegunEstadoProceso("0");
-        estadoProcesos.add(estaProcesoPrimero);
-        obtenerEstadoProcesoStatusTramiteJson();
 
-        String datos="";
-        for (int i =0;i<estadoProcesos.size();i++){
-            datos +=estadoProcesos.get(i).getEstadoProcesoId() +
-                    " - "+estadoProcesos.get(i).getNombre()+"- "
-                    +estadoProcesos.get(i).getCantidadDocsSegunEstadoProceso();
-        }
-        Log.e("DDDDD", datos);
+        poblarDocumentosSegunEstado();
+
+
         mAdapter = new StoreAdapter(this, estadoProcesos);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
@@ -218,10 +236,14 @@ public class DocumentosActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
         Log.e("estadoProcesos.size X", String.valueOf(estadoProcesos.size()));
         recyclerView.setNestedScrollingEnabled(false);
-        
+
+
+        String intentDocId = getIntent().getExtras().getString("vIdEstadoDoc");
+        String intentDocNombre = getIntent().getExtras().getString("vNombreDoc");
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Documentos");
+        getSupportActionBar().setTitle(intentDocNombre);
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
@@ -314,7 +336,7 @@ public class DocumentosActivity extends AppCompatActivity {
                     bundle.putString("vNombreDoc", estadoProcesoViewHolder.getNombre());
 
 
-                    Intent newDDocumentsActivity = new Intent(v.getContext(), DetalleDocumentosActivity.class);
+                    Intent newDDocumentsActivity = new Intent(v.getContext(), EstadosDocsEnTramiteActivity.class);
                     newDDocumentsActivity.putExtras(bundle);
                     v.getContext().startActivity(newDDocumentsActivity);
                 }
