@@ -186,24 +186,24 @@ public class DocumentosActivity extends AppCompatActivity {
         EstadoProceso estaProcesoPrimero = new EstadoProceso();
         estaProcesoPrimero.setEstadoProcesoId("32");
         estaProcesoPrimero.setNombre("POR APROBAR");
-        estaProcesoPrimero.setTipo("STATUS DOCUMENTO");
+        //estaProcesoPrimero.setTipo("STATUS DOCUMENTO");
         estadoProcesos.add(estaProcesoPrimero);
 
         EstadoProceso estaProcesoSEg = new EstadoProceso();
         estaProcesoSEg.setEstadoProcesoId("29");
         estaProcesoSEg.setNombre("APROBADOS");
-        estaProcesoSEg.setTipo("STATUS DOCUMENTO");
+        //estaProcesoSEg.setTipo("STATUS DOCUMENTO");
         estadoProcesos.add(estaProcesoSEg);
 
         EstadoProceso estaProcesoTer = new EstadoProceso();
         estaProcesoTer.setEstadoProcesoId("31");
         estaProcesoTer.setNombre("RECHAZADOS");
-        estaProcesoTer.setTipo("STATUS DOCUMENTO");
+        //estaProcesoTer.setTipo("STATUS DOCUMENTO");
         estadoProcesos.add(estaProcesoTer);
 
         EstadoProceso estaProcesoCuar = new EstadoProceso();
         estaProcesoCuar.setEstadoProcesoId("30");
-        estaProcesoCuar.setNombre("STATUS  TRAMITE");
+        estaProcesoCuar.setNombre("STATUS TRAMITE");
         //estaProcesoCuar.setTipo("STATUS DOCUMENTO");
         estadoProcesos.add(estaProcesoCuar);
     }

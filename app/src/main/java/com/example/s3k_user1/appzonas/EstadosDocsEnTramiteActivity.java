@@ -84,8 +84,96 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
     ProgressDialog progressDialog;
     FloatingActionButton floatingActionButton;
 
-    public void ListarDocumentosAprobadosApp() {
+    //METODOS
+    public void DocumentoPorEspecialistaListarExternoJson() {
+        // TODO  POR APROBAR
+        String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
+        String servicio = "";
+        if (perfil.equals("1003") || perfil.equals("1004")) {
+            servicio="DocumentoPorResponsableRevisionListarExternoJson";
+        } else {
+            servicio="DocumentoPorEspecialistaListarExternoJson";
+        }
+        cantidadDePetiticiones++;
+        Log.e(TAG,"CANTIDA DE PETICIONES: "+ cantidadDePetiticiones);
 
+
+        if ( cantidadDePetiticiones<=1){
+            //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
+            String url = IP_LEGAL + "/legal/Documento/"+servicio+"?estadoProcesoId="+EstadoDoc+"&usuarioId="+usuarioId;
+            Log.w("PorEspecialista url:",url);
+            JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                    url, (String) null,
+                    new Response.Listener<JSONObject>() {
+
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.w(TAG,response.toString());
+                            documentoList.clear();
+                            hidepDialog();
+                            JSONArray jRoutes = null;
+                            try {
+                                jRoutes = response.getJSONArray("data");
+
+                                for (int i = 0; i < jRoutes.length(); i++) {
+                                    JSONObject jsonObject = jRoutes.getJSONObject(i);
+
+                                    Documento documentoNew = new Documento();
+                                    documentoNew.setDocumentoId(jsonObject.getInt("DocumentoId"));
+                                    documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
+                                    documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
+                                    documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
+                                    documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
+
+                                    documentoList.add(documentoNew);
+                                    //Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            //progressDialog.hide();
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "Error: " + error.getMessage());
+                    //progressDialog.hide();
+                    hidepDialog();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+
+                        DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva solitar Documentos POR APROBAR", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }) {
+                @Override
+                public Request.Priority getPriority() {
+                    return Priority.HIGH;
+                }
+            };
+
+
+            //JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(7000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_MAX_RETRIES));
+        /*JsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+
+            //RequestQueue requestQueue = Volley.newRequestQueue(DetalleDocumentosActivity.this);
+            // requestQueue.add(JsonObjectRequest);
+            // MyApplication.getInstance().addToRequestQueue(JsonObjectRequest);
+
+            AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(JsonObjectRequest,REQUEST_TAG);
+        }
+
+    }
+
+    public void ListarDocumentosAprobadosApp() {
+        //TODO APROBADOS
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
         cantidadDePetiticiones++;
 
@@ -153,10 +241,9 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
     }
 
     public void ListarDocumentosRechazadosApp() {
-
+        //TODO RECHAZADOS
         String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
         cantidadDePetiticiones++;
-
         if ( cantidadDePetiticiones<=1){
             //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
             String url = IP_LEGAL + "/legal/RevisionDocumento/ListarDocumentosRechazadosApp?empleadoId="+empleadoId+"&perfil="+perfil;
@@ -164,7 +251,6 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
             JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                     url, (String) null,
                     new Response.Listener<JSONObject>() {
-
 
                         @Override
                         public void onResponse(JSONObject response) {
@@ -220,76 +306,70 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
 
     }
 
+    public void ListarDocumentosPorControlStatusApp() {
+        //TODO STATUS TRAMITE
+        String  REQUEST_TAG = "com.example.s3k_user1.appzonas";
+        cantidadDePetiticiones++;
+        if ( cantidadDePetiticiones<=1){
+            //Toast.makeText(this, "E USUARIO ID: "+ IP_LEGAL +" - "+ id, Toast.LENGTH_SHORT).show();
+            String url = IP_LEGAL + "/legal/RevisionDocumento/ListarDocumentosPorControlStatusApp?empleadoId="+empleadoId;
+            Log.w("URL RechazadosApp: ", url);
+            JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                    url, (String) null,
+                    new Response.Listener<JSONObject>() {
 
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.w(TAG,response.toString());
+                            documentoList.clear();
+                            hidepDialog();
+                            JSONArray jRoutes = null;
+                            try {
+                                jRoutes = response.getJSONArray("data");
 
-    public void RevizarDocumentoJson(int usuarioId, int documentoId, String esRechazado, String observacion, String perfil, String fileImagenOrPdf, String nombre, boolean esImagen) {
-        //RevizarDocumentoJson(int usuarioId, int documentoId, string esRechazado, string observacion, string perfil)
-        String url = IP_LEGAL+"/legal/RevisionDocumento/RevizarDocumentoJson";
-        //Log.w("URL LOGIN: ", url);
-        //Log.w("datos parametros: ", usuarioId+" - docid:"+documentoId +" - esRechazado:"+ esRechazado+" -Observacion:"+observacion+ " -perfil:"+perfil );
+                                for (int i = 0; i < jRoutes.length(); i++) {
+                                    JSONObject jsonObject = jRoutes.getJSONObject(i);
 
-        JSONObject js = new JSONObject();
+                                    Documento documentoNew = new Documento();
+                                    documentoNew.setDocumentoId(jsonObject.getInt("DocumentoId"));
+                                    //documentoNew.setNombre(jsonObject.getString("NombreArchivo"));
+                                    documentoNew.setStatus(jsonObject.getString("Status"));
+                                    documentoNew.setDescripcion(jsonObject.getString("Nemonico"));
+                                    documentoNew.setTipoContrato(jsonObject.getString("SubTipoServicio"));
+                                    documentoNew.setFecha(jsonObject.getString("FechaRegistroString"));
 
-        try {
-            JSONObject params = new JSONObject();
+                                    documentoList.add(documentoNew);
+                                    //Log.wtf("Doc List Dentro del Method",documentoList.get(0).getFecha());
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            //progressDialog.hide();
 
-
-            js.put("usuarioId",usuarioId);
-            js.put("documentoId",documentoId);
-            js.put("esRechazado",esRechazado);
-            js.put("observacion",observacion);
-            js.put("perfil",perfil);
-            js.put("fileImagenOrPdf",fileImagenOrPdf);
-            js.put("nombre",nombre);
-            js.put("esImagen",esImagen);
-
-            Log.e("Datos:", js.toString());
-
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                url, (String) null,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        Log.e("MENSAJE VALIDA: ", jsonObject.toString());
-                        try {
-                            //JSONObject objectUser = jsonObject.getJSONObject("usuario");
-
-                            String respuesta = jsonObject.getString("mensaje");
-                            //String mensaje = jsonObject.getString("mensaje");
-
-                            respuestaRevisizarDocuento= respuesta;
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "Error: " + error.getMessage());
+                    //progressDialog.hide();
+                    hidepDialog();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
 
-
+                        DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva solicitar Documentos Rechazados", Toast.LENGTH_LONG).show();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-
-                    DynamicToast.makeWarning(getBaseContext(), "Error Tiempo de Respuesta, Vuelva ha iniciar sesión", Toast.LENGTH_LONG).show();
                 }
-            }
-        })
-        {@Override
-        public Request.Priority getPriority() {
-            return Priority.NORMAL;
-        };
-        };
+            }) {
+                @Override
+                public Request.Priority getPriority() {
+                    return Priority.HIGH;
+                }
+            };
 
-
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(JsonObjectRequest);
+            AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(JsonObjectRequest,REQUEST_TAG);
+        }
 
     }
 
@@ -306,12 +386,8 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
         HashMap<String, String> user = session.getUserDetails();
         usuario = user.get(SessionManager.KEY_USUARIO_NOMBRE);
         usuarioId = user.get(SessionManager.KEY_USUARIO_ID);
-
         empleadoId = user.get(SessionManager.KEY_EMPLEADO_ID);
-
-
         perfil = user.get(SessionManager.KEY_USUARIO_ROL);
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         String intentDocId = getIntent().getExtras().getString("vIdEstadoDoc");
@@ -355,10 +431,14 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
         showpDialog();
 
         //DocumentoPorEspecialistaListarExternoJson();
-        if(NombreDoc.equals("APROBADOS")){
+        if(NombreDoc.equals("POR APROBAR")){
+            DocumentoPorEspecialistaListarExternoJson();
+        }else if(NombreDoc.equals("APROBADOS")){
             ListarDocumentosAprobadosApp();
         }else if(NombreDoc.equals("RECHAZADOS")){
             ListarDocumentosRechazadosApp();
+        }else if(NombreDoc.equals("STATUS TRAMITE")){
+            ListarDocumentosPorControlStatusApp();
         }
 
         floatingActionButton = findViewById(R.id.fabDocsEnTramite);
@@ -386,10 +466,14 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
     }
     private void poblarRecyclerView(){
         //DocumentoPorEspecialistaListarExternoJson();
-        if(NombreDoc.equals("APROBADOS")){
+        if(NombreDoc.equals("POR APROBAR")){
+            DocumentoPorEspecialistaListarExternoJson();
+        }else if(NombreDoc.equals("APROBADOS")){
             ListarDocumentosAprobadosApp();
         }else if(NombreDoc.equals("RECHAZADOS")){
             ListarDocumentosRechazadosApp();
+        }else if(NombreDoc.equals("STATUS TRAMITE")){
+            ListarDocumentosPorControlStatusApp();
         }
         recyclerView.setAdapter(mAdapter);
         //mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -514,7 +598,7 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
         @Override
         public void onBindViewHolder(EstadosDocsEnTramiteActivity.StoreAdapter.MyViewHolder holder, final int position) {
             final Documento documentoViewHolder = documentoList.get(position);
-            holder.name.setText(documentoViewHolder.getNombre());
+            holder.name.setText(documentoViewHolder.getDescripcion());
             final int documentoId = documentoViewHolder.getDocumentoId();
             holder.fecha.setText(documentoViewHolder.getFecha());
             //TODO inicializar Dialog
@@ -530,95 +614,24 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
                     TextView memonico =  myDialog.findViewById(R.id.det_doc_tit_subt);
                     TextView tipoContrato =  myDialog.findViewById(R.id.det_doc_tipo_contrato);
                     TextView fecha =  myDialog.findViewById(R.id.det_doc_fecha);
-                    documento.setText(documentoViewHolder.getNombre());
-                    memonico.setText("Memonico:" + documentoViewHolder.getDescripcion());
-                    tipoContrato.setText("Tipo Contrato:" + documentoViewHolder.getTipoContrato());
+                    //documento.setText temporalmente Status antes Nombre
+                    if(NombreDoc.equals("STATUS TRAMITE")){
+                        documento.setText("Status: "+documentoViewHolder.getStatus());
+                    }else{
+                        documento.setText(documentoViewHolder.getNombre());
+                    }
+
+                    memonico.setText("Memonico: " + documentoViewHolder.getDescripcion());
+                    tipoContrato.setText("Tipo Contrato: " + documentoViewHolder.getTipoContrato());
                     fecha.setText(documentoViewHolder.getFecha());
                     botonAprobar = myDialog.findViewById(R.id.btnAprobar);
                     botonCancelar = myDialog.findViewById(R.id.btnCancelar);
+
+                    botonAprobar.setVisibility(View.GONE);
+                    botonCancelar.setVisibility(View.GONE);
+
                     myDialog.show();
 
-
-                    botonCancelar.setOnClickListener(new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-
-                            Bundle bundle = new Bundle();
-
-                            bundle.putString("vNombreDocRechazar", documentoViewHolder.getNombre());
-                            bundle.putInt("vUsuarioId", Integer.parseInt(usuarioId));
-                            bundle.putInt("vDocumentoId", documentoViewHolder.getDocumentoId());
-                            bundle.putString("vPerfil", perfil);
-                            bundle.putString("vRechazar", "Si");
-                            Intent newDDocumentsActivity = new Intent(v.getContext(), RechazarDocumentoActivity.class);
-                            newDDocumentsActivity.putExtras(bundle);
-                            v.getContext().startActivity(newDDocumentsActivity);
-                        }
-                    });
-                    botonAprobar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myDialog.hide();
-
-                            if (perfil.equals("1003") || perfil.equals("1004")) {
-                                Bundle bundle = new Bundle();
-
-                                bundle.putInt("vusuarioId", Integer.parseInt(usuarioId));
-                                bundle.putInt("vdocumentoId", documentoId);
-                                bundle.putString("vesRechazado", "No");
-                                bundle.putString("vobservacion", "");
-                                bundle.putString("vperfil", perfil);
-
-                                bundle.putString("vnombre", documentoViewHolder.getNombre());
-                                Intent newDDocumentsActivity = new Intent(v.getContext(), UploadImageActivity.class);
-                                newDDocumentsActivity.putExtras(bundle);
-                                v.getContext().startActivity(newDDocumentsActivity);
-                                //startActivity(new Intent(v.getContext(), UploadImageActivity.class));
-                            } else {
-                                RevizarDocumentoJson(Integer.parseInt(usuarioId),documentoId,"No","",perfil,"","",false);
-                                Snackbar.make(vista, respuestaRevisizarDocuento, Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
-
-//                                Bundle bundle = new Bundle();
-//
-//                                bundle.putInt("vusuarioId", Integer.parseInt(id));
-//                                bundle.putInt("vdocumentoId", documentoId);
-//                                bundle.putString("vesRechazado", "No");
-//                                bundle.putString("vobservacion", "");
-//                                bundle.putString("vperfil", perfil);
-//
-//                                bundle.putString("vnombre", documentoViewHolder.getNombre());
-//                                Intent newDDocumentsActivity = new Intent(v.getContext(), UploadImageActivity.class);
-//                                newDDocumentsActivity.putExtras(bundle);
-//                                v.getContext().startActivity(newDDocumentsActivity);
-
-                            }
-                            /*AlertDialog.Builder builder = new AlertDialog.Builder(contextDetalleDocumento);
-                            builder.setTitle("Confirmar");
-                            builder.setMessage("Seguro que desea aprobar documento");
-
-                            builder.setCancelable(true);
-                            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener(){
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    myDialog.hide();
-                                    Snackbar.make(vista, "Documento Aprobado", Snackbar.LENGTH_LONG)
-                                            .setAction("Action", null).show();
-
-                                }
-                            });
-                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                            builder.show();*/
-
-                        }
-                    });
                 }
             });
             //Glide.with(context).load(movie.get(0));
@@ -639,10 +652,14 @@ public class EstadosDocsEnTramiteActivity extends AppCompatActivity implements S
                 public void onRefresh() {
                     //documentoList.clear();
                     //DocumentoPorEspecialistaListarExternoJson();
-                    if(NombreDoc.equals("APROBADOS")){
+                    if(NombreDoc.equals("POR APROBAR")){
+                        DocumentoPorEspecialistaListarExternoJson();
+                    }else if(NombreDoc.equals("APROBADOS")){
                         ListarDocumentosAprobadosApp();
                     }else if(NombreDoc.equals("RECHAZADOS")){
                         ListarDocumentosRechazadosApp();
+                    }else if(NombreDoc.equals("STATUS TRAMITE")){
+                        ListarDocumentosPorControlStatusApp();
                     }
 
                     refresh();

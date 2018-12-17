@@ -10,18 +10,19 @@ public class Documento {
     private String TipoContrato;
     private String Fecha;
     private String Estado;
+    private String Status;
 
     public Documento() {
-
     }
 
-    public Documento(int documentoId, String nombre, String descripcion, String tipoContrato, String fecha, String estado) {
+    public Documento(int documentoId, String nombre, String descripcion, String tipoContrato, String fecha, String estado, String status) {
         DocumentoId = documentoId;
         Nombre = nombre;
         Descripcion = descripcion;
         TipoContrato = tipoContrato;
         Fecha = fecha;
         Estado = estado;
+        Status = status;
     }
 
     public int getDocumentoId() {
@@ -70,5 +71,13 @@ public class Documento {
 
     public void setEstado(String estado) {
         Estado = estado;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
     }
 }
