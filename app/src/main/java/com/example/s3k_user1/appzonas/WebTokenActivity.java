@@ -49,7 +49,6 @@ import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.Model.Zonas;
 import com.google.android.gms.common.ConnectionResult;
@@ -115,7 +114,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    public static String IP_APK =  "http://192.168.0.12";
+    public static String IP_APK =  "http://192.168.1.42";
     /**
      * Acceso habilitado.
      */
@@ -685,58 +684,6 @@ public class WebTokenActivity extends AppCompatActivity implements
         requestQueue.add(jsonObjReq);
     }
 
-
-    public void enviarTokenATestDB(final String token , final String imei) {
-
-
-        String URL = "http://192.168.0.12:8090/excelAJS/enviarnotificacion.php";
-
-        JSONObject js = new JSONObject();
-        try {
-            JSONObject params = new JSONObject();
-
-            js.put("nuevoToken",token);
-            js.put("imei",imei);
-
-
-
-            //js.put("data", jsonobject.toString());
-
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        //Log.w(TAG, "actualizartoken"+response.toString());
-
-
-
-                    }
-                }, new Response.ErrorListener(){
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // error
-                            Log.w("Error.Response", error.getMessage());
-                        }
-                }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<>();
-                //Adding parameters to request
-                params.put("nuevoToken",token);
-                params.put("imei",imei);
-                //returning parameter
-                return params;
-            }
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
     /**
      * Obtiene token de 4 digitos generados del servidor.
      *
@@ -952,9 +899,7 @@ public class WebTokenActivity extends AppCompatActivity implements
                 String imei = obtenerIMEI();
                 txtImei.setText("IMEI: " +imei);
 
-                //enviarTokenAlServidor(token,imei);
-
-                enviarTokenATestDB(token,imei);
+                enviarTokenAlServidor(token,imei);
             }
         });
 
