@@ -70,7 +70,7 @@
                     android:orientation="vertical">
 
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                         android:textColorHint="@color/backgroundactivity"
                         app:errorEnabled="true">
 
-                        <android.support.design.widget.TextInputEditText
+                        <com.google.android.material.textfield.TextInputEditText
 
                             android:id="@+id/edtusuario"
                             android:layout_width="match_parent"
@@ -97,7 +97,7 @@
                             android:text="utecnico"
                             android:textColor="#fff" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
@@ -108,7 +108,7 @@
                     android:layout_marginTop="20dp"
                     android:orientation="vertical">
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
 
                         app:passwordToggleTint="@color/accentColor">
 
-                        <android.support.v7.widget.AppCompatEditText
+                        <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtcontrasena"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                             android:textAllCaps="true"
                             android:textColor="#fff" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
                 </LinearLayout>

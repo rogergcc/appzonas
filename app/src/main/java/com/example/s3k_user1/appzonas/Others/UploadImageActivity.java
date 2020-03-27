@@ -6,22 +6,20 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.AppCompatRadioButton;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatRadioButton;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NoConnectionError;
@@ -33,24 +31,22 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.DetalleDocumentosActivity;
-import com.example.s3k_user1.appzonas.WebTokenActivity;
 import com.example.s3k_user1.appzonas.R;
-
-
-
+import com.example.s3k_user1.appzonas.WebTokenActivity;
 import com.google.android.gms.common.util.IOUtils;
+import com.google.android.material.snackbar.Snackbar;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.util.HashMap;
-
 import java.util.Map;
 
 public class UploadImageActivity extends AppCompatActivity implements View.OnClickListener
@@ -353,14 +349,30 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
 
         //byte[] imgBytes = byteArrayOutputStream.toByteArray();
 
+        InputStream is = null;
+
+        try {
+            is = new FileInputStream(file.getPath());
+
+            is.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         byte[] fileBytes = new byte[0];
         try {
-            fileBytes = IOUtils.toByteArray(file);
+            fileBytes = IOUtils.toByteArray(is);
             Log.e("Datos PDF:", fileBytes.toString());
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("error PDF:", "EEEE");
         }
+
+
 
         return Base64.encodeToString(fileBytes,Base64.DEFAULT);
     }

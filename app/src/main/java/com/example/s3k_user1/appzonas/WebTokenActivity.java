@@ -1,7 +1,6 @@
 package com.example.s3k_user1.appzonas;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,15 +17,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +31,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
@@ -49,7 +49,9 @@ import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.s3k_user1.appzonas.AppUtils.BaseCrashHandler;
 import com.example.s3k_user1.appzonas.Model.Zonas;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -79,6 +81,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static android.Manifest.permission.READ_PHONE_NUMBERS;
+import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.READ_SMS;
+
 /**
  * type Maps activity.
  * SESION WEB POR NOTIFICACION
@@ -90,6 +96,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     private static final int FINE_LOCATION_PERMISSION_REQUEST = 1;
     private static final int CONNECTION_RESOLUTION_REQUEST = 2;
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
+    private static final int PERMISSION_REQUEST_CODE = 100;
 
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
@@ -114,11 +121,12 @@ public class WebTokenActivity extends AppCompatActivity implements
     private String tokenUser;
     //http://192.168.1.36
     //http://181.65.204.99:2222
-    public static String IP_APK =  "http://192.168.1.42";
+//    public static String IP_APK =  "http://192.168.1.42";
+    public static String IP_APK = "http://192.168.0.23";
     /**
      * Acceso habilitado.
      */
-    public boolean accesoHabilitado= false;
+    public boolean accesoHabilitado = false;
 
     /**
      * The constant TAG.
@@ -138,6 +146,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     String nombreUsuario = "";
 
     private long timeCountInMilliSeconds = 1 * 60000;
+
     private enum TimerStatus {
         STARTED,
         STOPPED
@@ -152,16 +161,19 @@ public class WebTokenActivity extends AppCompatActivity implements
     View vistaMaps;
     // fin dialog para cambiar IP
 
+    TelephonyManager telephonyManager;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         myDialogIP = new Dialog(WebTokenActivity.this);
         myDialogIP.setContentView(R.layout.dialog_cambiar_ip);
-        String msg ="";Fragment fragment;
+        String msg = "";
+        Fragment fragment;
         switch (item.getItemId()) {
 
             case R.id.documentos:
-                msg="Documentos";
-                Intent intent1 = new Intent(this,SplashScreenActivity.class);
+                msg = "Documentos";
+                Intent intent1 = new Intent(this, SplashScreenActivity.class);
                 startActivity(intent1);
                 return true;
 
@@ -198,6 +210,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     private TextView textViewTime;
     private ProgressBar progressBarCircle;
     private int TIEMPO_MINUTOS = 5;
+
     private void setTimerValues() {
         int time = 0;
 
@@ -206,6 +219,7 @@ public class WebTokenActivity extends AppCompatActivity implements
         // assigning values after converting to milliseconds
         timeCountInMilliSeconds = time * 60 * 1000;
     }
+
     private void startStop() {
 
         //startCountDownTimer();
@@ -244,6 +258,7 @@ public class WebTokenActivity extends AppCompatActivity implements
         }
 
     }
+
     private String hmsTimeFormatter(long milliSeconds) {
 
         String hms = String.format("%02d:%02d:%02d",
@@ -254,18 +269,20 @@ public class WebTokenActivity extends AppCompatActivity implements
 
 
     }
+
     private void setProgressBarValues() {
 
         progressBarCircle.setMax((int) timeCountInMilliSeconds / 1000);
         progressBarCircle.setProgress((int) timeCountInMilliSeconds / 1000);
     }
+
     private void startCountDownTimer() {
 
         countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
-                textViewTime.setText("quedan "+ hmsTimeFormatter(millisUntilFinished) +" segs ");
+                textViewTime.setText("quedan " + hmsTimeFormatter(millisUntilFinished) + " segs ");
 
                 progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
 
@@ -291,9 +308,11 @@ public class WebTokenActivity extends AppCompatActivity implements
         }.start();
         countDownTimer.start();
     }
+
     private void stopCountDownTimer() {
         countDownTimer.cancel();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -304,6 +323,16 @@ public class WebTokenActivity extends AppCompatActivity implements
                     findLocation();
                 }
             }
+            case PERMISSION_REQUEST_CODE:
+                if (ActivityCompat.checkSelfPermission(this, READ_SMS) !=
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                        READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, READ_PHONE_STATE) !=
+                                PackageManager.PERMISSION_GRANTED) {
+                    return;
+                } else {
+                    //textView.setText(telephonyManager.getLine1Number());
+                }
         }
     }
 
@@ -313,12 +342,39 @@ public class WebTokenActivity extends AppCompatActivity implements
      *
      * @return retorna el imei
      */
-    public String obtenerIMEI() {
+//    public String obtenerIMEI() {
+//
+//        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//
+//
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            @SuppressLint("MissingPermission") String imei = tm.getImei();
+//        } else {
+//            @SuppressLint("MissingPermission") String imei = tm.getDeviceId();
+//        }
+//        return imei;
+//
+//    }
+    @SuppressWarnings("deprecation")
+    private String obtenerIMEI() {
+        String IMEINumber = "";
+        if (ActivityCompat.checkSelfPermission(this, READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            TelephonyManager telephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                IMEINumber = telephonyMgr.getImei();
+            } else {
+                IMEINumber = telephonyMgr.getDeviceId();
 
-        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        @SuppressLint("MissingPermission") String imei =tm.getDeviceId(); // Obtiene el imei  or  "352319065579474";
-        return imei;
+            }
+        }
+        return IMEINumber;
+    }
 
+    @SuppressWarnings("deprecation")
+    private String obtenerPhoneData() {
+
+        return BaseCrashHandler.getInstance().getPhoneInfo();
     }
 
     /**
@@ -326,26 +382,21 @@ public class WebTokenActivity extends AppCompatActivity implements
      *
      * @return the string
      */
-    public String obtenerImeiYVerificarPermisos()
-    {
+    public String obtenerImeiYVerificarPermisos() {
 
-        if(Build.VERSION.SDK_INT  < Build.VERSION_CODES.M)
-        {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             //Menores a Android 6.0
-            String imei= obtenerIMEI();
-            return imei;
-        }
-        else
-        {
+            return obtenerIMEI();
+        } else {
             // Mayores a Android 6.0
-            String imei="";
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+            String imei = "";
+            if (checkSelfPermission(READ_PHONE_STATE)
                     != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
+                requestPermissions(new String[]{READ_PHONE_STATE},
                         MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
-                imei="";
+                imei = "";
             } else {
-                imei= obtenerIMEI();
+                imei = obtenerIMEI();
             }
 
             return imei;
@@ -362,7 +413,7 @@ public class WebTokenActivity extends AppCompatActivity implements
      */
     public void obtenerDatosDelServicioZonasTrabajo(final String codigoUsuario) {
         //https://api.myjson.com/bins/wicz0
-        String url = IP_APK + "/legal/ZonaTrabajo/ZonaTrabajoListarJsonExterno?id="+codigoUsuario;
+        String url = IP_APK + "/legal/ZonaTrabajo/ZonaTrabajoListarJsonExterno?id=" + codigoUsuario;
         zonasList = new ArrayList<>();
 
         //jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -404,7 +455,6 @@ public class WebTokenActivity extends AppCompatActivity implements
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
 
 
                         final float[] distance = new float[2];
@@ -449,7 +499,7 @@ public class WebTokenActivity extends AppCompatActivity implements
 
                             if ((distance[0] < radio) && codigoUsuario.equals(userObtenerID)) {
                                 habilitarAcceso = true;
-                                codigoZonaTrabajo=zonasList.get(i).getZonaTrabajoId();
+                                codigoZonaTrabajo = zonasList.get(i).getZonaTrabajoId();
                             } else {
 
                                 habilitarAcceso = (habilitarAcceso) ? habilitarAcceso : false;
@@ -468,11 +518,11 @@ public class WebTokenActivity extends AppCompatActivity implements
                         if (existeUsuario == false)
                             estas = " sin Zona de Trabajo asignado";
                         else
-                            estas = habilitarAcceso ? " Acceso Habilitado y Zona: "+codigoZonaTrabajo : "Se encuentra fuera de una Zona de Trabajo asignado";
+                            estas = habilitarAcceso ? " Acceso Habilitado y Zona: " + codigoZonaTrabajo : "Se encuentra fuera de una Zona de Trabajo asignado";
                         String mensaje = "Usuario " + estas;
                         if (existeUsuario == false)
                             DynamicToast.makeError(getBaseContext(), mensaje, Toast.LENGTH_LONG).show();
-                        else{
+                        else {
                             String imei = obtenerIMEI();
 
                             Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -483,27 +533,26 @@ public class WebTokenActivity extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
 
-                            if (addresses.size() > 0)
-                            {
-                                String countryName = addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName();
+                            if (addresses.size() > 0) {
+                                String countryName = addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() + ", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName();
                             }
 
 
-                            HistorialAccesoInsertarJsonExterno(codigoUsuario,imei,
+                            HistorialAccesoInsertarJsonExterno(codigoUsuario, imei,
                                     String.valueOf(userLocation.latitude),
                                     String.valueOf(userLocation.longitude),
                                     addresses.get(0).getCountryName(),
                                     addresses.get(0).getLocality(),
                                     addresses.get(0).getFeatureName());
-                            if (habilitarAcceso){
-                                habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"1");
+                            if (habilitarAcceso) {
+                                habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo, "1");
 
                                 obtenerTokenDelUsuario(codigoUsuario);
 
                                 startStop();
                                 DynamicToast.makeSuccess(getBaseContext(), estas, Toast.LENGTH_LONG).show();
 
-                            }else{
+                            } else {
                                 //habilitarAccesoAZonaTrabajoUsuario(codigoZonaTrabajo,"0");
                                 toke.setText("Token");
                                 DynamicToast.makeError(getBaseContext(), estas, Toast.LENGTH_LONG).show();
@@ -526,7 +575,8 @@ public class WebTokenActivity extends AppCompatActivity implements
         requestQueue.add(JsonObjectRequest);
 
     }
-    public void HistorialAccesoInsertarJsonExterno(final String UsuarioID, final String IMEI, final String Latitud, final String Longitud, final String Pais, final String Ciudad, final String Direccion){
+
+    public void HistorialAccesoInsertarJsonExterno(final String UsuarioID, final String IMEI, final String Latitud, final String Longitud, final String Pais, final String Ciudad, final String Direccion) {
 
 
         //
@@ -536,23 +586,23 @@ public class WebTokenActivity extends AppCompatActivity implements
         JSONObject js = new JSONObject();
         try {
             JSONObject params = new JSONObject();
-            js.put("UsuarioID",UsuarioID);
-            js.put("IMEI",IMEI);
-            js.put("Latitud",Latitud);
-            js.put("Longitud",Longitud);
-            js.put("Pais",Pais);
-            js.put("Ciudad",Ciudad);
-            js.put("Direccion",Direccion);
+            js.put("UsuarioID", UsuarioID);
+            js.put("IMEI", IMEI);
+            js.put("Latitud", Latitud);
+            js.put("Longitud", Longitud);
+            js.put("Pais", Pais);
+            js.put("Ciudad", Ciudad);
+            js.put("Direccion", Direccion);
 
 
             //js.put("data", jsonobject.toString());
 
-        }catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
-                Request.Method.POST,url, js,
+                Request.Method.POST, url, js,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -561,8 +611,7 @@ public class WebTokenActivity extends AppCompatActivity implements
 
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
@@ -587,7 +636,7 @@ public class WebTokenActivity extends AppCompatActivity implements
             }*/
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<String, String>();
                 //params.put("Content-Type","application/x-www-form-urlencoded");
                 return params;
             }
@@ -603,12 +652,12 @@ public class WebTokenActivity extends AppCompatActivity implements
      * @param zona                           the zona
      * @param habilitarDeshabilitarUbicacion the habilitar deshabilitar ubicacion
      */
-    public void habilitarAccesoAZonaTrabajoUsuario(String zona, String habilitarDeshabilitarUbicacion){
-        Log.w(TAG,"zona: "+ zona);
-        String habilitarUbicacion =habilitarDeshabilitarUbicacion;
+    public void habilitarAccesoAZonaTrabajoUsuario(String zona, String habilitarDeshabilitarUbicacion) {
+        Log.w(TAG, "zona: " + zona);
+        String habilitarUbicacion = habilitarDeshabilitarUbicacion;
         //Actualiza en parametro ubicacion segun  el id del la Zona Trabajo
         //http://192.168.1.33/legal/ZonaTrabajo/ZonaTrabajoEditarSenEncuentraEnZonaSegunIdJson?id=1&ubicacion=1
-        String url = IP_APK + "/legal/ZonaTrabajo/ZonaTrabajoEditarSenEncuentraEnZonaSegunIdJson?id="+zona+"&ubicacion="+habilitarUbicacion;
+        String url = IP_APK + "/legal/ZonaTrabajo/ZonaTrabajoEditarSenEncuentraEnZonaSegunIdJson?id=" + zona + "&ubicacion=" + habilitarUbicacion;
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 url, (String) null,
@@ -637,10 +686,10 @@ public class WebTokenActivity extends AppCompatActivity implements
      * @param token token para poder recibir notificaciones
      * @param imei  imei del movil android
      */
-    public void enviarTokenAlServidor(String token , String imei) {
+    public void enviarTokenAlServidor(String token, String imei) {
 
 
-        String URL = IP_APK + "/legal/DispositivoUsuario/ActualizarTokenDispositivoDelUsuarioSegunImeiRegistradoJson?imei="+imei+"&token="+token;
+        String URL = IP_APK + "/legal/DispositivoUsuario/ActualizarTokenDispositivoDelUsuarioSegunImeiRegistradoJson?imei=" + imei + "&token=" + token;
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 URL, (String) null,
@@ -648,21 +697,21 @@ public class WebTokenActivity extends AppCompatActivity implements
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.w(TAG, "actualizartoken"+response.toString());
+                        Log.w(TAG, "actualizartoken" + response.toString());
 
 
-                        try { LayoutInflater inflater = getLayoutInflater();
+                        try {
+                            LayoutInflater inflater = getLayoutInflater();
                             View layout = inflater.inflate(R.layout.custom_toast,
                                     (ViewGroup) findViewById(R.id.custom_toast_layout));
                             TextView text = (TextView) layout.findViewById(R.id.text);
                             String respuestaActualizar = (response.getString("respuesta"));
-                            if ( respuestaActualizar.equals("true")) {
+                            if (respuestaActualizar.equals("true")) {
                                 //Toast.makeText(WebTokenActivity.this, "Token Registrado Correctamente", Toast.LENGTH_SHORT).show();
                                 DynamicToast.makeSuccess(getBaseContext(), "Token Registrado Correctamente", Toast.LENGTH_LONG).show();
 
 
-                            }
-                            else
+                            } else
                                 //Toast.makeText(WebTokenActivity.this, "Token No Registrado, IMEI no registrado en el Sistema\"", Toast.LENGTH_SHORT).show();
                                 DynamicToast.makeError(getBaseContext(), "Token No Registrado, Verifique IMEI \n este registrado en el Sistema", Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
@@ -684,6 +733,57 @@ public class WebTokenActivity extends AppCompatActivity implements
         requestQueue.add(jsonObjReq);
     }
 
+    /*Metod testigng guardar enviar token a DB*/
+    public void enviarTokenATestDB(final String token, final String imei) {
+
+
+        String URL = IP_APK + "/excelAJS/enviarnotificacion.php";
+
+        JSONObject js = new JSONObject();
+        try {
+            JSONObject params = new JSONObject();
+
+            js.put("nuevoToken", token);
+            js.put("imei", imei);
+
+
+            //js.put("data", jsonobject.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        //Log.w(TAG, "actualizartoken"+response.toString());
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // error
+                Log.w("Error.Response", error.getMessage());
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                //Adding parameters to request
+                params.put("nuevoToken", token);
+                params.put("imei", imei);
+                //returning parameter
+                return params;
+            }
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
     /**
      * Obtiene token de 4 digitos generados del servidor.
      *
@@ -692,7 +792,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     public void obtenerTokenDelUsuario(final String codigoUsuario) {
         String codigUsuario = codigoUsuario;
         //http://192.168.1.36/legal/Token/TokenListarJsonExterno?id_usuario=1
-        String url = IP_APK + "/legal/Token/TokenListarJsonExterno?id_usuario="+codigoUsuario;
+        String url = IP_APK + "/legal/Token/TokenListarJsonExterno?id_usuario=" + codigoUsuario;
         zonasList = new ArrayList<>();
         //jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
         JsonObjectRequest JsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
@@ -726,7 +826,6 @@ public class WebTokenActivity extends AppCompatActivity implements
                         }
 
 
-
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -740,6 +839,7 @@ public class WebTokenActivity extends AppCompatActivity implements
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(JsonObjectRequest);
     }
+
     private void findLocation() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -813,17 +913,21 @@ public class WebTokenActivity extends AppCompatActivity implements
     }
 
 
-
     private BroadcastReceiver mHandler = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            String codigoUsuario = intent.getStringExtra("codigo");
-            String nombreUsuario = intent.getStringExtra("nombreUsuario");
-            textView.setText(nombreUsuario);
-            //btnIngresarSistema.callOnClick();
+//            if(getIntent().getExtras() != null) {
+            if (intent.getExtras() != null) {
 
-            obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
+                String codigoUsuario = intent.getStringExtra("codigo");
+                String nombreUsuario = intent.getStringExtra("nombreUsuario");
+                textView.setText(nombreUsuario);
+                //btnIngresarSistema.callOnClick();
+
+                obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
+            }
+
 
         }
     };
@@ -835,6 +939,7 @@ public class WebTokenActivity extends AppCompatActivity implements
         //transaction.addToBackStack(null);
         transaction.commit();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -842,6 +947,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     }
 
     Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -856,11 +962,11 @@ public class WebTokenActivity extends AppCompatActivity implements
 
         toolbar.setLogo(R.drawable.legal100);
 
-        vistaMaps= findViewById(R.id.act_det_document);
+        vistaMaps = findViewById(R.id.act_det_document);
         textView = (TextView) findViewById(R.id.TextView);
 
 
-        toke= (TextView) findViewById(R.id.token);
+        toke = (TextView) findViewById(R.id.token);
         txtImei = (TextView) findViewById(R.id.txtImei);
 
         //PROGRESSBAR
@@ -871,7 +977,7 @@ public class WebTokenActivity extends AppCompatActivity implements
 
         btnIngresarSistema = (Button) findViewById(R.id.btnIngresarSistema);
 
-        btnImei= (ImageButton) findViewById(R.id.btnImei);
+        btnImei = (ImageButton) findViewById(R.id.btnImei);
 
         //TODO el boton ingresar por defecto Inhabilitado
         //btnIngresarSistema.setClickable(false);
@@ -881,15 +987,17 @@ public class WebTokenActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 String ime = obtenerIMEI();
+
+
                 //Toast.makeText(WebTokenActivity.this, "IMEI: "+ime, Toast.LENGTH_SHORT).show();
                 //Log.w(TAG,"imei: " + ime + " codigoUser: " + codigoUsuario);
                 obtenerDatosDelServicioZonasTrabajo(codigoUsuario);
 
 
-
-                textView.setText("Usuario: "+ nombreUsuario);
+                textView.setText("Usuario: " + nombreUsuario);
             }
         });
+
 
         btnImei.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -897,9 +1005,47 @@ public class WebTokenActivity extends AppCompatActivity implements
 
                 String token = FirebaseInstanceId.getInstance().getToken();
                 String imei = obtenerIMEI();
+                String phoneData = obtenerPhoneData();
+
+                TelephonyManager telephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+
+                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    Activity#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for Activity#requestPermissions for more details.
+                    return;
+                }
+
+                String serialNumber = telephonyMgr.getSimSerialNumber();
+
+                String deviceSoftwareVersion = telephonyMgr.getDeviceSoftwareVersion();
+                String networkOperator = telephonyMgr.getNetworkOperator();
+                String networkCountryIso = telephonyMgr.getNetworkCountryIso();
+                String simOperator= telephonyMgr.getSimOperator();
+                String voiceMailNumber= telephonyMgr.getVoiceMailNumber();
+
+                String MyPhoneNumber = "0000000000";
+                MyPhoneNumber = telephonyMgr.getSubscriberId();
+
+                String version= System.getProperty("os.version"); // OS version
+                int sdkver = Build.VERSION.SDK_INT ;     // API Level
+                String sdkverv2 = Build.VERSION.RELEASE ;     // API Level
+                String voiceMailNu232 = android.os.Build.DEVICE ;          // Device
+                String voiceMailNu12= android.os.Build.PRODUCT   ;       // Product
+                String phoneModel= Build.MODEL   ;       // Model
+                //String verserial= Build.getSerial().toString()   ;
+
+
+
                 txtImei.setText("IMEI: " +imei);
 
-                enviarTokenAlServidor(token,imei);
+//                enviarTokenAlServidor(token,imei);
+
+                enviarTokenATestDB(token,imei);
             }
         });
 

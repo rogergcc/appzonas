@@ -1,20 +1,21 @@
 package com.example.s3k_user1.appzonas;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.s3k_user1.appzonas.fragment.CartFragment;
 import com.example.s3k_user1.appzonas.fragment.GiftsFragment;
 import com.example.s3k_user1.appzonas.fragment.ProfileFragment;
 import com.example.s3k_user1.appzonas.fragment.StoreFragment;
 import com.example.s3k_user1.appzonas.helper.BottomNavigationBehavior;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     //todo clase no utilizada en la app

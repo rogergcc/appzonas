@@ -7,7 +7,7 @@
     android:id="@+id/det_doc_item_layout"
     >
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/detalle_documento_card_view"
 
         android:layout_width="match_parent"
@@ -52,6 +52,6 @@
 
         </RelativeLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>
