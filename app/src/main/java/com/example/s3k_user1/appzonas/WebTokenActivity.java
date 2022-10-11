@@ -1,5 +1,9 @@
 package com.example.s3k_user1.appzonas;
 
+import static android.Manifest.permission.READ_PHONE_NUMBERS;
+import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.READ_SMS;
+
 import android.Manifest;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -53,6 +57,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.s3k_user1.appzonas.AppUtils.BaseCrashHandler;
 import com.example.s3k_user1.appzonas.Model.Zonas;
+import com.example.s3k_user1.appzonas.util.NetUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -80,10 +85,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static android.Manifest.permission.READ_PHONE_NUMBERS;
-import static android.Manifest.permission.READ_PHONE_STATE;
-import static android.Manifest.permission.READ_SMS;
 
 /**
  * type Maps activity.
@@ -850,6 +851,9 @@ public class WebTokenActivity extends AppCompatActivity implements
         } else {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
+
+            if (mLastLocation ==null) return;
+
             LatLng myLat = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             // Add a marker in Sydney and move the camera
 
@@ -1078,6 +1082,9 @@ public class WebTokenActivity extends AppCompatActivity implements
 
         //MiFirebaseInstanceIdService.tokenD;
         Log.w(TAG, "Token Main: " + token);
+        if (!NetUtil.isGpsEnabled(this)){
+            Toast.makeText(this, "GPS desactivado", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
