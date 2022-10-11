@@ -7,7 +7,7 @@
         android:angle="0"
         android:endColor="@color/primaryColor"
         android:type="linear"
-        android:startColor="@color/primaryDarkColor"
+        android:startColor="@color/background_footer_item_grid_categorias"
 
         />
 

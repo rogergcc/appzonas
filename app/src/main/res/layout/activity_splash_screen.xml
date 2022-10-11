@@ -19,9 +19,9 @@
             android:id="@+id/imagen_logo_splash_screen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:layout_centerHorizontal="true"
             android:src="@drawable/legalex" />
 
         <RelativeLayout
