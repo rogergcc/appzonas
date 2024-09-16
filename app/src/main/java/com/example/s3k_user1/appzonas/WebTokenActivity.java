@@ -5,6 +5,7 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.READ_SMS;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,6 +22,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -170,32 +174,28 @@ public class WebTokenActivity extends AppCompatActivity implements
         myDialogIP.setContentView(R.layout.dialog_cambiar_ip);
         String msg = "";
         Fragment fragment;
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.documentos) {
+            msg = "Documentos";
+            Intent intent1 = new Intent(this, SplashScreenActivity.class);
+            startActivity(intent1);
+            return true;
+        } else if (itemId == R.id.action_cambiar_ip) {
+            final EditText dialog_edt_ip = myDialogIP.findViewById(R.id.dialog_edt_ip);
+            botonAprobarIP = myDialogIP.findViewById(R.id.btnAprobarIP);
+            //botonCancelar = myDialog.findViewById(R.id.btnCancelar);
+            dialog_edt_ip.setText(WebTokenActivity.IP_APK);
+            myDialogIP.show();
+            botonAprobarIP.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-            case R.id.documentos:
-                msg = "Documentos";
-                Intent intent1 = new Intent(this, SplashScreenActivity.class);
-                startActivity(intent1);
-                return true;
+                    WebTokenActivity.IP_APK = dialog_edt_ip.getText().toString();
+                    dialog_edt_ip.setText(WebTokenActivity.IP_APK);
+                    myDialogIP.hide();
 
-            case R.id.action_cambiar_ip:
-
-                final EditText dialog_edt_ip = myDialogIP.findViewById(R.id.dialog_edt_ip);
-                botonAprobarIP = myDialogIP.findViewById(R.id.btnAprobarIP);
-                //botonCancelar = myDialog.findViewById(R.id.btnCancelar);
-                dialog_edt_ip.setText(WebTokenActivity.IP_APK);
-                myDialogIP.show();
-                botonAprobarIP.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        WebTokenActivity.IP_APK = dialog_edt_ip.getText().toString();
-                        dialog_edt_ip.setText(WebTokenActivity.IP_APK);
-                        myDialogIP.hide();
-
-                    }
-                });
-
+                }
+            });
         }
 
 
@@ -359,17 +359,30 @@ public class WebTokenActivity extends AppCompatActivity implements
 //    }
     @SuppressWarnings("deprecation")
     private String obtenerIMEI() {
-        String IMEINumber = "";
-        if (ActivityCompat.checkSelfPermission(this, READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-            TelephonyManager telephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                IMEINumber = telephonyMgr.getImei();
-            } else {
-                IMEINumber = telephonyMgr.getDeviceId();
+//        String IMEINumber = "";
+//        if (ActivityCompat.checkSelfPermission(this, READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+//            TelephonyManager telephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                IMEINumber = telephonyMgr.getImei();
+//            } else {
+//                IMEINumber = telephonyMgr.getDeviceId();
+//
+//            }
+//        }
+//        return IMEINumber;
+        String deviceId;
 
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        } else {
+            final TelephonyManager mTelephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+            if (mTelephony.getDeviceId() != null) {
+                deviceId = mTelephony.getDeviceId();
+            } else {
+                deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
             }
         }
-        return IMEINumber;
+        return deviceId;
     }
 
     @SuppressWarnings("deprecation")
@@ -705,7 +718,6 @@ public class WebTokenActivity extends AppCompatActivity implements
                             LayoutInflater inflater = getLayoutInflater();
                             View layout = inflater.inflate(R.layout.custom_toast,
                                     (ViewGroup) findViewById(R.id.custom_toast_layout));
-                            TextView text = (TextView) layout.findViewById(R.id.text);
                             String respuestaActualizar = (response.getString("respuesta"));
                             if (respuestaActualizar.equals("true")) {
                                 //Toast.makeText(WebTokenActivity.this, "Token Registrado Correctamente", Toast.LENGTH_SHORT).show();
@@ -966,7 +978,6 @@ public class WebTokenActivity extends AppCompatActivity implements
 
         toolbar.setLogo(R.drawable.legal100);
 
-        vistaMaps = findViewById(R.id.act_det_document);
         textView = (TextView) findViewById(R.id.TextView);
 
 
@@ -1024,16 +1035,16 @@ public class WebTokenActivity extends AppCompatActivity implements
                     return;
                 }
 
-                String serialNumber = telephonyMgr.getSimSerialNumber();
-
+                String serialNumber = getSimSerialNumber();
+                Log.i("Serial Number", serialNumber);
                 String deviceSoftwareVersion = telephonyMgr.getDeviceSoftwareVersion();
                 String networkOperator = telephonyMgr.getNetworkOperator();
                 String networkCountryIso = telephonyMgr.getNetworkCountryIso();
                 String simOperator= telephonyMgr.getSimOperator();
                 String voiceMailNumber= telephonyMgr.getVoiceMailNumber();
 
-                String MyPhoneNumber = "0000000000";
-                MyPhoneNumber = telephonyMgr.getSubscriberId();
+//                String MyPhoneNumber = "0000000000";
+//                MyPhoneNumber = telephonyMgr.getSubscriberId();
 
                 String version= System.getProperty("os.version"); // OS version
                 int sdkver = Build.VERSION.SDK_INT ;     // API Level
@@ -1087,6 +1098,29 @@ public class WebTokenActivity extends AppCompatActivity implements
             Toast.makeText(WebTokenActivity.this, "GPS desactivado", Toast.LENGTH_SHORT).show();
         }
         startStop();
+    }
+
+    private String getSimSerialNumber() {
+        String simSerialNo="";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+
+            SubscriptionManager subsManager = (SubscriptionManager) this.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+
+            @SuppressLint("MissingPermission") List<SubscriptionInfo> subsList = subsManager.getActiveSubscriptionInfoList();
+
+            if (subsList!=null) {
+                for (SubscriptionInfo subsInfo : subsList) {
+                    if (subsInfo != null) {
+                        simSerialNo  = subsInfo.getIccId();
+                    }
+                }
+            }
+        } else {
+            TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+            simSerialNo = tMgr.getSimSerialNumber();
+        }
+        return simSerialNo;
     }
 
 

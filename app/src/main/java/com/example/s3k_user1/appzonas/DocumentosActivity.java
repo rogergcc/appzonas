@@ -5,13 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -22,6 +15,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
@@ -165,17 +166,12 @@ public class DocumentosActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         String msg ="";Fragment fragment;
-        switch (item.getItemId()) {
-
-            case R.id.cerrar_sesion:
-                msg="Sesion";
-                session.logoutUser();
-                Intent intent1 = new Intent(this,SplashScreenActivity.class);
-                startActivity(intent1);
-                return true;
-
-
-
+        if (item.getItemId() == R.id.cerrar_sesion) {
+            msg = "Sesion";
+            session.logoutUser();
+            Intent intent1 = new Intent(this, SplashScreenActivity.class);
+            startActivity(intent1);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -331,17 +331,12 @@ public class DetalleDocumentosActivity extends AppCompatActivity implements Swip
     public boolean onOptionsItemSelected(MenuItem item) {
 
         String msg ="";Fragment fragment;
-        switch (item.getItemId()) {
-
-            case R.id.cerrar_sesion:
-                msg="Sesion";
-                session.logoutUser();
-                Intent intent1 = new Intent(this,SplashScreenActivity.class);
-                startActivity(intent1);
-                return true;
-
-
-
+        if (item.getItemId() == R.id.cerrar_sesion) {
+            msg = "Sesion";
+            session.logoutUser();
+            Intent intent1 = new Intent(this, SplashScreenActivity.class);
+            startActivity(intent1);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -5,21 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.example.s3k_user1.appzonas.Sesion.SessionManager;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.HashMap;
 
@@ -108,24 +109,22 @@ public class ActividadPrincipal extends AppCompatActivity {
     private void seleccionarItem(MenuItem itemDrawer) {
         Fragment fragmentoGenerico = null;
         FragmentManager fragmentManager = getSupportFragmentManager();
+        int id = itemDrawer.getItemId();
 
-        switch (itemDrawer.getItemId()) {
-            /*case R.id.item_inicio:
+        /*case R.id.item_inicio:
                 fragmentoGenerico = new FragmentoInicio();
                 break;*/
-            case R.id.item_cuenta:
-                fragmentoGenerico = new FragmentoCuenta();
-                break;
-            /*case R.id.item_categorias:
+        if (id == R.id.item_cuenta) {
+            fragmentoGenerico = new FragmentoCuenta();
+                /*case R.id.item_categorias:
                 fragmentoGenerico = new FragmentoCategorias();
                 break;*/
-            case R.id.item_configuracion:
-                startActivity(new Intent(this, ActividadConfiguracion.class));
-                break;
-            case R.id.item_cerraSesion:
-                session.logoutUser();
-                Intent intent1 = new Intent(this,SplashScreenActivity.class);
-                startActivity(intent1);
+        } else if (id == R.id.item_configuracion) {
+            startActivity(new Intent(this, ActividadConfiguracion.class));
+        } else if (id == R.id.item_cerraSesion) {
+            session.logoutUser();
+            Intent intent1 = new Intent(this, SplashScreenActivity.class);
+            startActivity(intent1);
         }
         if (fragmentoGenerico != null) {
             fragmentManager

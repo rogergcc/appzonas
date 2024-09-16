@@ -1,13 +1,15 @@
 package com.example.s3k_user1.appzonas;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class Main2Activity extends AppCompatActivity {
     //todo clase no utilizada en la app
@@ -18,14 +20,13 @@ public class Main2Activity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.action_carrito:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.action_search:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_carrito) {
+                mTextMessage.setText(R.string.title_home);
+                return true;
+            } else if (itemId == R.id.action_search) {
+                mTextMessage.setText(R.string.title_dashboard);
+                return true;
             }
             return false;
         }
