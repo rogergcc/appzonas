@@ -210,7 +210,7 @@ public class WebTokenActivity extends AppCompatActivity implements
     //TODO PROGRESSBAR CUSTOM
     private TextView textViewTime;
     private ProgressBar progressBarCircle;
-    private int TIEMPO_MINUTOS = 5;
+    private int TIEMPO_MINUTOS = 1;
 
     private void setTimerValues() {
         int time = 0;
@@ -1055,6 +1055,7 @@ public class WebTokenActivity extends AppCompatActivity implements
 
 
         if (getIntent().getExtras() != null) {
+            Log.e(TAG, "onCreate: Si hay extras" );
             //TODO habilitar boton para ingresar enviar datos al sistema
             // btnIngresarSistema.setClickable(true);
 
@@ -1082,9 +1083,10 @@ public class WebTokenActivity extends AppCompatActivity implements
 
         //MiFirebaseInstanceIdService.tokenD;
         Log.w(TAG, "Token Main: " + token);
-        if (!NetUtil.isGpsEnabled(this)){
-            Toast.makeText(this, "GPS desactivado", Toast.LENGTH_SHORT).show();
+        if (!NetUtil.isGpsEnabled(WebTokenActivity.this)){
+            Toast.makeText(WebTokenActivity.this, "GPS desactivado", Toast.LENGTH_SHORT).show();
         }
+        startStop();
     }
 
 
