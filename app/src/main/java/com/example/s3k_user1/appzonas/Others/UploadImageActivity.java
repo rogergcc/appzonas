@@ -102,8 +102,15 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
         if (uri.getScheme().equals("content")) {
             Cursor cursor = getContentResolver().query(uri, null, null, null, null);
             try {
+
                 if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (columnIndex != -1) {
+                        result = cursor.getString(columnIndex);
+                    } else {
+                        result = uri.getLastPathSegment();
+                    }
                 }
             } finally {
                 if (cursor != null) {
@@ -154,48 +161,38 @@ public class UploadImageActivity extends AppCompatActivity implements View.OnCli
     }
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.rbImagen:
-                btnElegirImagenOPdf.setText("Elegir Imagen");
-                btnSubirImagenOPdf.setText("Subir Imagen");
-                break;
-            case R.id.rbPdf:
-                btnElegirImagenOPdf.setText("Elegir PDF");
-                btnSubirImagenOPdf.setText("Subir PDF");
-                break;
-            case R.id.btnElegirImagenOPdf:
+        int id = v.getId();
+        if (id == R.id.rbImagen) {
+            btnElegirImagenOPdf.setText("Elegir Imagen");
+            btnSubirImagenOPdf.setText("Subir Imagen");
+        } else if (id == R.id.rbPdf) {
+            btnElegirImagenOPdf.setText("Elegir PDF");
+            btnSubirImagenOPdf.setText("Subir PDF");
+        } else if (id == R.id.btnElegirImagenOPdf) {
+            if (rbImagen.isChecked() || rbPdf.isChecked()) {
 
-                if (rbImagen.isChecked() || rbPdf.isChecked()) {
-
-                    if (rbImagen.isChecked()) {
-                        Log.w("Seleccion", "imagenChecked");
-                        selectImage();
-                        archivoUploadEsImagen = true;
-                    }
-                    if (rbPdf.isChecked()) {
-                        Log.w("Seleccion", "pdf checked");
-                        selectFilePDF();
-                    }
-                }else {
-                    Toast.makeText(getApplicationContext(), "Seleccione Imagen o Pdf", Toast.LENGTH_SHORT).show();
-
+                if (rbImagen.isChecked()) {
+                    Log.w("Seleccion", "imagenChecked");
+                    selectImage();
+                    archivoUploadEsImagen = true;
                 }
-
-                break;
-            case R.id.btnSubirImagenOPdf:
-
-                if(fileStringImagenOrPdf.equals("-1")) {
-                    Log.e("SI",fileStringImagenOrPdf);
-                    Toast.makeText(getApplicationContext(), "Antes eliga un archivo", Toast.LENGTH_SHORT).show();
-                    return;
+                if (rbPdf.isChecked()) {
+                    Log.w("Seleccion", "pdf checked");
+                    selectFilePDF();
                 }
-                else{
-                    RevizarDocumentoJson(); //Web service revizar Correcto
-                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Seleccione Imagen o Pdf", Toast.LENGTH_SHORT).show();
+
+            }
+        } else if (id == R.id.btnSubirImagenOPdf) {
+            if (fileStringImagenOrPdf.equals("-1")) {
+                Log.e("SI", fileStringImagenOrPdf);
+                Toast.makeText(getApplicationContext(), "Antes eliga un archivo", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                RevizarDocumentoJson(); //Web service revizar Correcto
+            }
 //                RevizarDocumentoPDFJson();
-
-
-                break;
         }
     }
     private void RevizarDocumentoPDFJson(){

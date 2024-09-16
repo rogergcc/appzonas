@@ -46,27 +46,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment;
-            switch (item.getItemId()) {
-                case R.id.navigation_shop:
-                    toolbar.setTitle("Token");
-                    fragment = new StoreFragment();
-                    loadFragment(fragment);
-                    return true;
-                case R.id.navigation_gifts:
-                    toolbar.setTitle("Documentos");
-                    fragment = new GiftsFragment();
-                    loadFragment(fragment);
-                    return true;
-                case R.id.navigation_cart:
-                    toolbar.setTitle("Cart");
-                    fragment = new CartFragment();
-                    loadFragment(fragment);
-                    return true;
-                case R.id.navigation_profile:
-                    toolbar.setTitle("Login");
-                    fragment = new ProfileFragment();
-                    loadFragment(fragment);
-                    return true;
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_shop) {
+                toolbar.setTitle("Token");
+                fragment = new StoreFragment();
+                loadFragment(fragment);
+                return true;
+            } else if (itemId == R.id.navigation_gifts) {
+                toolbar.setTitle("Documentos");
+                fragment = new GiftsFragment();
+                loadFragment(fragment);
+                return true;
+            } else if (itemId == R.id.navigation_cart) {
+                toolbar.setTitle("Cart");
+                fragment = new CartFragment();
+                loadFragment(fragment);
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                toolbar.setTitle("Login");
+                fragment = new ProfileFragment();
+                loadFragment(fragment);
+                return true;
             }
 
             return false;
